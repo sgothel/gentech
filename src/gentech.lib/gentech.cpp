@@ -562,7 +562,7 @@ int Chromosomen::Evolution (double GoalFitness, const std::string& chrptrPtkFile
   (void) NoImprovingCrossingOvers;
 
   while ( BestFitness < GoalFitness &&
-	  // NoImproving < NoImprovingCrossingOvers &&
+	  NoImproving < NoImprovingCrossingOvers &&
 	  stop==0
 	)
   {
