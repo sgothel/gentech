@@ -51,9 +51,9 @@
 # ifndef _LISTE_H
   # define _LISTE_H
 
-  # include <iostream.h>
-  # include <stdlib.h>
-  # include <stdio.h>
+  # include <iostream>
+  # include <cstdlib>
+  # include <cstdio>
   # include <assert.h>
   # include "interror.h"
 
@@ -114,7 +114,7 @@
     template<class T> class Liste;
 
     template<class T>
-    ostream& operator<< (ostream& OS, Liste<T>& List)
+    std::ostream& operator<< (std::ostream& OS, Liste<T>& List)
     {
       List.Ausgabe (OS);
       return OS;
@@ -123,14 +123,39 @@
 
     template<class Tt> class Liste
     {
-      friend ostream& operator<< <> (ostream& OS, Liste<Tt>& List) ;
+        friend std::ostream& operator<< <> (std::ostream& OS, Liste<Tt>& List) ;
+
+        private:
+            // Interne Klasse: So ist keine Freunddeklaration noetig und
+            // ListElem ist nicht im ganzen Programm sichtbar.
+
+            class ListElem {
+            public:
+                ListElem(const Tt& e, ListElem* v = 0, ListElem* n = 0)
+                : element(e), vorg(v), nachf(n)
+                {
+    #ifdef __LISTE_PARANOIA__
+                    if(vorg)
+                    {
+                        if(vorg->nachf!=this) INT_ERR(__LINE__);
+                    }
+                    if(nachf)
+                    {
+                        if(nachf->vorg!=this) INT_ERR(__LINE__);
+                    }
+    #endif
+                }
+
+                Tt element;
+                ListElem* vorg;
+                ListElem* nachf; // dbl lst.
+            };
 
       public:
-        class ListElem;     // Vorrausdeklaration einer internen Klasse
+        Liste() : start(0), anzahl(0), aktZgr(0), aktInd(0)   { anfang(); }
 
-        Liste() : start(0), anzahl(0), aktZgr(0)   { anfang(); }
         virtual ~Liste() { dest(); }
-        Liste(const Liste& m) : start(0), anzahl(m.anzahl) { copy(m); }
+        Liste(const Liste& m) : start(0), anzahl(m.anzahl), aktZgr(0), aktInd(0) { copy(m); }
 
         virtual int fuegeEin(const Tt&, int = 0);
 
@@ -165,7 +190,7 @@
         { return hole_element(i); }
 
         int laenge() const { return anzahl; }
-        virtual void Ausgabe (ostream&);
+        virtual void Ausgabe (std::ostream&);
         int istElement(const Tt&, int =0) const;
         int Referenz2Index(const Tt&) const;
 
@@ -204,32 +229,6 @@
         Tt& hole_element(int i) const;
 
       private:
-
-      // Interne Klasse: So ist keine Freunddeklaration noetig und
-      // ListElem ist nicht im ganzen Programm sichtbar.
-
-      class ListElem {
-        public:
-          ListElem(const Tt& e, ListElem* v = 0, ListElem* n = 0)
-          : element(e), vorg(v), nachf(n) 
-          { 
-              #ifdef __LISTE_PARANOIA__
-                if(vorg) 
-                {
-                  if(vorg->nachf!=this) INT_ERR(__LINE__);
-                }
-                if(nachf) 
-                {
-                  if(nachf->vorg!=this) INT_ERR(__LINE__);
-                }
-              #endif
-          }
-    
-          Tt element;
-          ListElem* vorg;
-          ListElem* nachf; // dbl lst.
-        };
-
         void dest();
         void copy(const Liste&);
         ListElem* start;
@@ -467,7 +466,7 @@
       }
     #endif
 
-    template<class T> void Liste<T>::Ausgabe (ostream& OS)
+    template<class T> void Liste<T>::Ausgabe (std::ostream& OS)
     {
       const int Zeilenlaenge = 10;
   

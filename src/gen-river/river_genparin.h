@@ -11,24 +11,27 @@
 // Sven Goethel * http://www.jausoft.com - mailto:info@jausoft.com
 // Bielefeld, den 11.3.1994.
 
-# ifndef _GENPARIN_H
-  # define _GENPARIN_H
-  # include <stdio.h>
-  # include <string.h>
-  # include "std.h"
-  # include "gentech.h"
+#ifndef RIVER_GENPARIN_H
+  #define RIVER_GENPARIN_H
 
+  #include <string>
+
+  #include "gentech.h"
+
+  // external template function definition in .cpp
   template <class T>
-  extern void Input ( char *question, T &dest, T def );
+  extern void Input ( const std::string& question, T &dest, T def );
+
   enum { WRITE_MODE, READ_MODE };
-  const char *FileNameInput ( int mode, char *end );
+
+  std::string FileNameInput ( int mode, const std::string& end );
 
   class GenParameter {
   public:
       void Input( int NukleoMinVal, int NukleoMaxVal,
 		  NukleoTyp *ptrSpliceCode=NULL );
-      char FileName[80];
-      char FileNameHeader[80];
+      std::string FileName;
+      std::string FileNameHeader;
       SpliceCodeInfo TheSpliceCodeInfo;
       double BirthRate;
       int Bigamie;

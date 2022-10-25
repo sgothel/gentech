@@ -24,12 +24,15 @@
     // welcher fuer dieses Spiel relevant ist.
     enum { CODE_MIN_VAL=0, CODE_MAX_VAL=4 };
     RiverGame (int Monk, int Cannibal, double Frontier )
-    : Monk(Monk), Cannibal(Cannibal), Frontier((int)Frontier) {}
+    : Frontier((int)Frontier), Cannibal(Cannibal), Monk(Monk),
+      RiversideAMonk(0), RiversideBMonk(0),
+      RiversideACannibal(0), RiversideBCannibal(0) {}
+
     // Spielen...
     enum { TO_RIVERSIDE_A = 1, TO_RIVERSIDE_B = 2 };
-    double Play(const Chromosom& Lsg, int Gfx) ;
+    double Play(const Chromosom& Lsg, bool Gfx) ;
     // Der Schiedsrichter ...
-    int Referee (void) const;
+    bool Referee (void) const;
   protected:
     int Frontier;
     int Cannibal;

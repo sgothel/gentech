@@ -11,15 +11,13 @@
 // Sven Goethel * http://www.jausoft.com - mailto:info@jausoft.com
 // Bielefeld, den 11.3.1994.
 
-# ifndef _RIVERGEN_H
-  # define _RIVERGEN_H
+#ifndef RIVER_GEN_H
+  #define RIVER_GEN_H
 
-  # include <stdio.h>
-  #ifdef __MSDOS__ 
-	  # include <conio.h>
-  #endif
-  # include "gentech.h"
-  # include "river.h"
+  #include <string>
+
+  #include "gentech.h"
+  #include "river.h"
 
   class RiverProblem : public Chromosomen {
   public:
@@ -38,7 +36,7 @@
 		) ;
     RiverProblem( int Monk, int Cannibal,
 		  int MaxChromosomen,
-		  char *StartGenFile,
+		  const std::string& StartGenFile,
 		  int Nukleotide=3,
 		  SpliceCodeInfo *ptrSpliceCodeInfo=NULL,
 		  long InversionFreq=0,

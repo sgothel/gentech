@@ -26,13 +26,11 @@
     // Wertebereich des Nukleotids auf dem Chromosom,
     // welcher fuer dieses Spiel relevant ist.
     enum { CODE_MIN_VAL = 0, CODE_MAX_VAL = 24 };
-    SalesGame (int monk, 	int cannibal,
-	       double frontier, double basis = .7
-	      )
+    SalesGame (double frontier)
     : Frontier((int)frontier) {}
     // Spielen...
     enum { TO_RIVERSIDE_A = 1, TO_RIVERSIDE_B = 2 };
-    double Play(const Chromosom& Lsg, int Gfx) const ;
+    double Play(const Chromosom& Lsg, bool Gfx) const ;
   protected:
     int Frontier;
   };

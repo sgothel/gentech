@@ -11,17 +11,15 @@
 // Sven Goethel * Stapenhorststr.35a * 33615 Bielefeld * 0521/139228
 // Bielefeld, den 11.3.1994.
 
-# ifndef _SALESGEN_H
-  # define _SALESGEN_H
+#ifndef SALES_GEN_H
+  #define SALES_GEN_H
 
-  # include <stdio.h>
-  #ifdef __MSDOS__ 
-	  # include <conio.h>
-  #endif
-  # include "gentech.h"
-  # include "sales.h"
-  # include "maschine.h"
-  # include "random.h"
+  #include <string>
+
+  #include "gentech.h"
+  #include "sales.h"
+
+  #include "maschine.h"
 
   class SalesChromosomen ;
 
@@ -33,16 +31,12 @@
     : Chromosom(a) {}
 
     // Der Konstruktor fuer die Konstruktion eines Chromosomes
-    SalesChromosom ( SalesChromosomen & env,
-		int StartChromosomLength=0
-	      ) ;
+    SalesChromosom ( SalesChromosomen & env, int StartChromosomLength=0 ) ;
 
     // Der Konstruktor zum einlesen eines gespeicherten Chromosomes !
     // Die Fitness wird hier nicht berechnet !!!
-    SalesChromosom ( SalesChromosomen & env,
-		char *FileName
-	      );
- };
+    SalesChromosom ( SalesChromosomen & env, const std::string& FileName );
+  };
 
   class SalesChromosomen : public Chromosomen {
   
@@ -50,7 +44,7 @@
 
   public:
     // Der Konstruktor mit allen Einstellungen zum Loesen des Problems.
-    SalesChromosomen( int Monk, int Cannibal,
+    SalesChromosomen(
 		  int MaxChromosomen,
 		  int StartChromosomNumber,
 		  int StartChromosomLength,
@@ -63,9 +57,9 @@
 		  long MutationFreq=10000, // [1]
 		  int NoImprovingCrossingOvers=100
 		) ;
-    SalesChromosomen( int Monk, int Cannibal,
+    SalesChromosomen(
 		  int MaxChromosomen,
-		  char *StartGenFile,
+		  const std::string& StartGenFile,
 		  int Nukleotide=3,
 		  SpliceCodeInfo *ptrSpliceCodeInfo=NULL,
 		  long InversionFreq=0,
@@ -83,7 +77,7 @@
 
     // Beschreibung der Parameter s. "gentech.h"
     virtual int Evolution (
-			    double GoalFitness, char *chrptrPtkFile=NULL,
+			    double GoalFitness, const std::string& chrptrPtkFile,
 			    double BirthRate=0.6, int Bigamie=0
 			  );
     // Fitness fuer das uebergebene Chromosom.
@@ -110,8 +104,9 @@
     // Wegstrecke darstellt
     void Kill (int i)
     {
-      if ((*this)[i].GetFitness() < MASCHINE::eps)
-	Flag |= 1;	// Chromosom mit WorstDistance wird geloescht
+      if ((*this)[i].GetFitness() < MASCHINE::epsilon) {
+          Flag |= 1;	// Chromosom mit WorstDistance wird geloescht
+      }
       loesche (i);
     }
 
@@ -142,7 +137,7 @@
       WorstDistance = 0;
       // und neu berechnen
       while (i < laenge())	{
-	if ((Distance = TheGame.Play ((*this)[i], FALSE)) > WorstDistance)
+	if ((Distance = TheGame.Play ((*this)[i], false)) > WorstDistance)
 	    WorstDistance = Distance;
 	i++;
       }

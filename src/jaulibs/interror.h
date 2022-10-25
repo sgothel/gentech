@@ -20,9 +20,9 @@
 # ifndef _ERROR_H
   # define _ERROR_H
 
-  #include <stdio.h>
-/*  #include <iostream.h> */
-  #include <stdlib.h>
+  #include <cstdio>
+/*  #include <iostream> */
+  #include <cstdlib>
 
 
   # define INT_ERR(a)     int_err(a,__FILE__)
@@ -30,7 +30,7 @@
   # define INT_ERR_NOT_ZERO(a,b)  if((a)!=0)int_err(b,__FILE__)
   # define ERROR_OUT(a) ErrorOut((a))
 
-  void int_err ( int line , char * file ) ;
+  void int_err ( int line , const char * file ) ;
   void ErrorOut(char *fmt, ...);
 
 

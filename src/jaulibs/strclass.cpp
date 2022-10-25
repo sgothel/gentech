@@ -28,12 +28,13 @@
  */
 /*************************************************************************/
 
-# include "strclass.h"
+#include "strclass.h"
+#include <climits>
 
-ostream& operator<< (ostream& OS, StrClass& str)
+std::ostream& operator<< (std::ostream& OS, StrClass& str)
 {
     if(str.length()==0) {
-        OS << "(null)" ;
+        OS << "(nullptr)" ;
     } else {
         OS << str.StrPtr ;
     }
@@ -42,7 +43,7 @@ ostream& operator<< (ostream& OS, StrClass& str)
 
 void StrClass::copy(const char *m)
 {
-    if(m!=NULL)
+    if(m!=nullptr)
     {
       // FIXME: consider using strnlen(..) using maxlen!
       {
@@ -50,9 +51,9 @@ void StrClass::copy(const char *m)
           if( _length > INT_MAX ) {
               INT_ERR(__LINE__);
           }
-          length = (int) _length;
+          m_length = (int) _length;
       }
-      if ( ( StrPtr=new char[length+1] ) == NULL )
+      if ( ( StrPtr=new char[length+1] ) == nullptr )
       {
           fprintf(stderr,"Insufficient memory\n");
           INT_ERR(__LINE__);
@@ -60,8 +61,8 @@ void StrClass::copy(const char *m)
       strncpy(StrPtr, m, length+1);
       // StrPtr[length] = 0; // explicit EOS in case using strnlen(..) using maxlen
     } else {
-      StrPtr=NULL;
-      length=0;
+      StrPtr=nullptr;
+      m_length=0;
     }
 }
 
@@ -70,14 +71,14 @@ void StrClass::copy(const StrClass &m)
     if( 0 < m.length() )
     {
       length = m.length();
-      if ( ( StrPtr=new char[length+1] ) == NULL )
+      if ( ( StrPtr=new char[length+1] ) == nullptr )
       {
         fprintf(stderr,"Insufficient memory\n");
         INT_ERR(__LINE__);
       }
       strncpy(StrPtr, m, length+1);
     } else {
-      StrPtr=NULL;
+      StrPtr=nullptr;
       length=0;
     }
 }
@@ -85,9 +86,9 @@ void StrClass::copy(const StrClass &m)
 
 void StrClass::dest()
 {
-    if( NULL != StrPtr ) {
+    if( nullptr != StrPtr ) {
       delete[] StrPtr;
-      StrPtr=NULL;
+      StrPtr=nullptr;
     }
     length = 0;
 }
@@ -99,7 +100,7 @@ void StrClass::strcat(const StrClass &m)
      if( 1 == bufferLen ) {
        return;
      }
-     if ( ( buffer=new char[bufferLen] ) == NULL ) {
+     if ( ( buffer=new char[bufferLen] ) == nullptr ) {
        INT_ERR(__LINE__);
      }
      if( 0 < length() ) {
@@ -112,7 +113,7 @@ void StrClass::strcat(const StrClass &m)
          strncpy(buffer+length(), m.StrPtr, m.length()+1);
      }
 
-     if( NULL != StrPtr ) {
+     if( nullptr != StrPtr ) {
          delete[] StrPtr;
      }
      StrPtr=buffer;
@@ -123,7 +124,7 @@ StrClass& StrClass::operator=(const StrClass &m)
 {
     if(this != &m)
     {
-       if( NULL != StrPtr ) {
+       if( nullptr != StrPtr ) {
          delete[] StrPtr;
        }
        copy(m);
@@ -133,9 +134,9 @@ StrClass& StrClass::operator=(const StrClass &m)
 
 StrClass& StrClass::operator=(const char *StrPtr)
 {
-    if(this->StrPtr != m.StrPtr)
+    if(this->StrPtr != StrPtr)
     {
-      if( NULL != StrPtr ) {
+      if( nullptr != StrPtr ) {
         delete[] StrPtr;
       }
       copy(StrPtr);
@@ -220,7 +221,7 @@ void StrClass::assignDouble(double m)
 { 
       char buf[256]; 
       snprintf(buf, 256, "%.0lf", m); 
-      if( NULL != StrPtr ) {
+      if( nullptr != StrPtr ) {
         delete[] StrPtr;
       }
       copy(buf);
@@ -240,9 +241,9 @@ int StrClass::chk4SubStr(const StrClass &SubStr, int StartIndex)
     return -1;
 }
 
-int StrClass::DelSubStr(const StrClass &SubStr, int StartIndex)
+int StrClass::delSubStr(const StrClass &SubStr, int StartIndex)
 {
-    const int i=Chk4SubStr(SubStr, StartIndex);
+    const int i=chk4SubStr(SubStr, StartIndex);
     
     if( 0 <= i ) {
 	const int l = length();
@@ -262,7 +263,7 @@ int StrClass::DelSubStr(const StrClass &SubStr, int StartIndex)
     return i;
 }
 
-bool StrClass::InsertSubStr(const StrClass &SubStr, int Index)
+bool StrClass::insertSubStr(const StrClass &SubStr, int Index)
 {
 	const int l = length();
 	const int l2 = SubStr.length();
@@ -289,44 +290,44 @@ bool StrClass::InsertSubStr(const StrClass &SubStr, int Index)
 	return true;
 }
 
-int StrClass::DelAllSubStr(const StrClass &SubStr)
+int StrClass::delAllSubStr(const StrClass &SubStr)
 {
     int i=0;
     
-    while(DelSubStr(SubStr)>=0) i++;
+    while(delSubStr(SubStr)>=0) i++;
     
     return i;
 }             
 
-int StrClass::SubstSubStr(const StrClass &SubStr, const StrClass &Substitute, int StartIndex)
+int StrClass::substSubStr(const StrClass &SubStr, const StrClass &Substitute, int StartIndex)
 {
     int i=StartIndex;
     
-    if((i=Chk4SubStr(SubStr,i))>=0) 
+    if((i=chk4SubStr(SubStr,i))>=0)
     {
-      if(DelSubStr(SubStr, i)<0) INT_ERR(__LINE__);
-	if(InsertSubStr(Substitute, i)==false) INT_ERR(__LINE__);
+      if(delSubStr(SubStr, i)<0) INT_ERR(__LINE__);
+	if(insertSubStr(Substitute, i)==false) INT_ERR(__LINE__);
     }
     
     return i;
 }
 
-int StrClass::SubstAllSubStr(const StrClass &SubStr, const StrClass &Substitute)
+int StrClass::substAllSubStr(const StrClass &SubStr, const StrClass &Substitute)
 {
     int i=0;
     
-    while(SubstSubStr(SubStr,Substitute)>=0) i++;
+    while(substSubStr(SubStr,Substitute)>=0) i++;
     
     return i;
 }
 
-void StrClass::DelAllXtraWhiteSpaces()
+void StrClass::delAllXtraWhiteSpaces()
 {
-	SubstAllSubStr("	"," "); // tab
-	SubstAllSubStr("  "," "); // blank blank
+	substAllSubStr("	"," "); // tab
+	substAllSubStr("  "," "); // blank blank
 	if(length()==1 && ( StrPtr[0]==' ' || StrPtr[0]=='	' ) ) {
         dest();
-      }
+    }
 }
 
 /***************************************************************************/

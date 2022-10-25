@@ -28,7 +28,7 @@
 # ifndef _MENGE_H
   # define _MENGE_H
 
-  #include <iostream.h>
+  #include <iostream>
   #include "liste.h"      // Template-Liste
 
   template<class T> class Menge {
@@ -67,13 +67,14 @@
 
   template<class T> void Menge<T>::inhalt() const
   {
-    cout << "{ ";
+    std::cout << "{ ";
     if (!leer()) {
-      cout << l[0];
-      for (int i=1; i<card(); i++)
-	cout << ", " << l[i];
+      std::cout << l[0];
+      for (int i=1; i<card(); i++) {
+          std::cout << ", " << l[i];
+      }
     }
-    cout << " }" << endl;
+    std::cout << " }" << std::endl;
   }
 
   template<class T> Menge<T> Menge<T>::operator*(Menge<T>& a) const

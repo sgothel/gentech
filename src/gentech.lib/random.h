@@ -23,10 +23,10 @@
 # ifndef _RANDOM_H
   # define _RANDOM_H
 
-  # include <stdlib.h>          // fuer random(), randomize()
+  # include <cstdlib>          // fuer random(), randomize()
 
 
-  #ifdef __LINUX__
+  #ifdef __linux__
 
   // Die Inline-Funktionen
   template<class T> T Random (const T l, const T h)

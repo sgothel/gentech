@@ -16,21 +16,9 @@
 # ifndef _GENTECH_H
   # define _GENTECH_H
 
-  # ifdef  __BORLANDC__
-    # include <conio.h>
-  # endif
-  # include <assert.h>
-  # include <stdlib.h>
-  # include <stdio.h>
-  # include <time.h>
-  # include <ctype.h>
-  # include "bool.h"
-  # include "liste.h"
-  # include "menge.h"
-  # include "std.h"
-  # include "sortlist.h"
-  # include "maschine.h"
-  # include <limits.h>
+  #include <string>
+
+  #include "sortlist.h"
 
   extern char GenTechVersion[];
 
@@ -141,23 +129,19 @@
 
   class Chromosom : public virtual Liste<NukleoTyp> {
 
-  friend ostream& operator << (ostream& OS, Liste<NukleoTyp>&);
+  friend std::ostream& operator << (std::ostream& OS, Liste<NukleoTyp>&);
 
   public:
     // Der Copykonstruktor ...
     Chromosom (const Chromosom& a ) 
-    : env(a.env), Liste<NukleoTyp>(a) { Copy (a); }
+    : Liste<NukleoTyp>(a), env(a.env) { Copy (a); }
 
     // Der Konstruktor fuer die Konstruktion eines Chromosomes
-    Chromosom ( Chromosomen & env,
-		int StartChromosomLength=0
-	      ) ;
+    Chromosom ( Chromosomen & env, int StartChromosomLength=0 ) ;
 
     // Der Konstruktor zum einlesen eines gespeicherten Chromosomes !
     // Die Fitness wird hier nicht berechnet !!!
-    Chromosom ( Chromosomen & env,
-		char *FileName
-	      ) ;
+    Chromosom ( Chromosomen & env, const std::string& FileName ) ;
 
     // Der Destruktor ...
     virtual ~Chromosom (void) {}
@@ -169,7 +153,7 @@
     int operator==(const Chromosom&) const;
 
     // Die Funktion zum speichern eines Chromosomes !
-    int Save ( char *FileName ) const;
+    int Save ( const std::string& FileName ) const;
 
     // Berechnet aus der UserNukleotidValue, 'i' ist hier der Index dafuer,
     // die Nukleotid-Nummer fuer die Chromosomen-Schicht.
@@ -203,7 +187,7 @@
     double GetFitness (void) const { return Fitness; }
 
     // Ausgabe-Funktion
-    virtual void Ausgabe (ostream&);
+    virtual void Ausgabe (std::ostream&);
 
     Chromosomen & env;
     double Fitness;
@@ -269,7 +253,7 @@
     // kann hier noch nicht definiert werden (compiler ?!) !!!
     Chromosomen (NukleoTyp UserNukleoMinVal, NukleoTyp UserNukleoMaxVal,
 		  int MaxChromosomen,
-		  char *StartGenFile,
+		  const std::string& StartGenFile,
 		  int Nukleotide=4,
 		  SpliceCodeInfo *PtrSpliceCodeInfo=0,
 		  long InversionFreq=0,
@@ -300,7 +284,7 @@
     virtual ~Chromosomen ( void ) {} ;
 
     // Die Chromosomen abspeichern..
-    int Save ( char* ) const;
+    int Save ( const std::string& fname ) const;
 
     // Ein vom Benutzer evt. zu selbst definierendes Echo....
     // Dies wird nach jeder neu generierten Population aufgerufen.
@@ -330,7 +314,7 @@
     // chrptrPtkFile            : Das Protokollfile ...
     // return                   : Die Nummer der EndGeneration !!!
     virtual int Evolution (
-			    double GoalFitness, char *chrptrPtkFile=NULL,
+			    double GoalFitness, const std::string& chrptrPtkFile,
 			    double BirthRate=0.6, int Bigamie=0,
 			    int NoImprovingCrossingOvers = 100
 			  );
@@ -361,12 +345,12 @@
     // das Beste Chromosom Ueberhaupt ... ge-splice't
     const Chromosom &GetTheBestEverChromosom ( void );
 
-    virtual void Ausgabe (ostream&);
+    virtual void Ausgabe (std::ostream&);
 
     // Vom Benutzer zu Definieren :
     // Fitness fuer das uebergebene Chromosom.
     // Wert [0..1] !
-    virtual double Fitness (const Chromosom&) = NULL ;
+    virtual double Fitness (const Chromosom&) = 0 ;
 
     // Schnittstelle zu 'private' Elemente :
     NukleoTyp GetUserNukleoMinVal(void) { return UserNukleoMinVal; }

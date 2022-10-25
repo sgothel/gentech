@@ -87,7 +87,7 @@ int line23[] = { 212 };
 
 /* Die Namen der 25 Staedte */
 
-char *names[] = {
+static const char *names[] = {
   "Aachen         ", "Berlin         ", "Bielefeld      ", "Braunschweig   ",
   "Bremen         ", "Dortmund       ", "Dresden        ", "Duesseldorf     ",
   "Essen          ", "Frankfurt/Main ", "Freiburg i. Br.", "Hamburg        ",
@@ -97,47 +97,44 @@ char *names[] = {
   "Wuppertal      "
 };
 
-static
-  int *lineno[] = { line00, line01, line02, line03, line04,
-		    line05, line06, line07, line08, line09,
-		    line10, line11, line12, line13, line14,
-		    line15, line16, line17, line18, line19,
-		    line20, line21, line22, line23
-		  };
+static const int *lineno[] = { line00, line01, line02, line03, line04,
+		                       line05, line06, line07, line08, line09,
+		                       line10, line11, line12, line13, line14,
+		                       line15, line16, line17, line18, line19,
+		                       line20, line21, line22, line23
+		                     };
 
 
-double SalesGame::Play(const Chromosom& Lsg, int Gfx) const
+double SalesGame::Play(const Chromosom& Lsg, bool Gfx) const
 {
-  int ChromPos  = 1;
-  double result = 0;
-  int debug1 = 0, debug2 = 0, debug3 = 0;
+    if (Gfx == false)	{
+        // Berechnung ohne Ausgabe
+        int ChromPos  = 1;
+        double result = 0;
 
-  if (Gfx == FALSE)	{	// Berechnung ohne Ausgabe
-    for ( ;ChromPos < Lsg.laenge(); ChromPos++)	{
-      if (Lsg[ChromPos] > Lsg[ChromPos - 1])
-	result += (debug3 =
-		   lineno[debug2 = Lsg[ChromPos - 1]]
-			 [(debug1 = Lsg[ChromPos])-Lsg[ChromPos-1]-1]);
-      else
-	result += (debug3 =
-		   lineno[debug1 = Lsg[ChromPos]]
-			 [(debug2 = Lsg[ChromPos - 1])-Lsg[ChromPos]-1]);
+        for ( ;ChromPos < Lsg.laenge(); ChromPos++)	{
+            if( Lsg[ChromPos] > Lsg[ChromPos-1] ) {
+                result += lineno[ Lsg[ChromPos-1] ][ Lsg[ChromPos] - Lsg[ChromPos-1] - 1 ];
+            } else {
+                result += lineno[ Lsg[ChromPos] ][ Lsg[ChromPos-1] - Lsg[ChromPos] - 1 ];
+            }
+        }
+        if ( Lsg[ChromPos - 1] > Lsg[0] ) {
+            result += lineno[ Lsg[0] ][ Lsg[ChromPos-1] - Lsg[0] - 1 ];
+        } else {
+            result += lineno[ Lsg[ChromPos-1] ][ Lsg[0] - Lsg[ChromPos-1] - 1 ];
+        }
+        return result;
+    } else {
+        // Protokolliert den zurueckgelegten Weg
+        std::cout << std::endl << std::endl << "Die Loesung: " << std::endl;
+        for (int i = 1, ChromPos = 0; ChromPos < Lsg.laenge(); ChromPos++, i++)
+        {
+            std::cout << names[Lsg[ChromPos]] << " -> ";
+            if (! (i % 4)) std::cout << std::endl;
+        }
+        std::cout << std::endl ;
+        return -1;
     }
-    if ((debug1 = Lsg[ChromPos - 1]) > (debug2 = Lsg[0]))
-      result += lineno[Lsg[0]][Lsg[ChromPos - 1]-Lsg[0]-1];
-    else
-      result += lineno[Lsg[ChromPos - 1]][Lsg[0]-Lsg[ChromPos-1]-1];
-
-    return result;
-  } else {	// Protokolliert den zurueckgelegten Weg
-    cout << endl << endl << "Die Loesung: " << endl;
-    for (int i = 1, ChromPos = 0; ChromPos < Lsg.laenge(); ChromPos++, i++)
-    {
-      cout << names[Lsg[ChromPos]] << " -> ";
-      if (! (i % 4)) cout << endl;
-    }
-    cout << endl ;
-    return -1;
-  }
 }
 

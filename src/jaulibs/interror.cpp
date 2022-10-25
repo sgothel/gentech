@@ -23,7 +23,7 @@
  *
 */
 
-#include <stdarg.h>     // uses va_list
+#include <cstdarg>     // uses va_list
 
 #ifdef __ACAD_APPLICATION__ 
   #include "adslib.h"
@@ -35,7 +35,7 @@
 # include "interror.h"
 
 
-void int_err ( int line , char * file ) {
+void int_err ( int line , const char * file ) {
 
   char text [ 256 ] ;
 

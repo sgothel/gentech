@@ -11,25 +11,26 @@
 // Sven Goethel * Stapenhorststr.35a * 33615 Bielefeld * 0521/139228
 // Bielefeld, den 11.3.1994.
 
-# include "salesgen.h"
-# ifdef __BORLANDC__
-    # include <conio.h>
-# endif
+#include <climits>
 
-SalesChromosom::SalesChromosom ( SalesChromosomen & env,
-			     char *FileName
-			   ) 
+#include "sales_gen.h"
+
+#include "random.h"
+
+#ifndef NDEBUG
+    #include "menge.h"
+#endif
+
+SalesChromosom::SalesChromosom ( SalesChromosomen & env, const std::string& FileName )
 : Chromosom(env, FileName) {}
 
-SalesChromosom::SalesChromosom ( SalesChromosomen & env,
-		                 int StartChromosomLength
-		               )
+SalesChromosom::SalesChromosom ( SalesChromosomen & env, int StartChromosomLength)
 : Chromosom(env, 0)
 // Zufaellig erzeugte Chromosomen
 {
   /* UNIQUE NUKLEONS */
    if (StartChromosomLength > env.UserNukleoMaxVal - env.UserNukleoMinVal + 1)
-          cerr << "\nFehler !! "
+       std::cerr << "\nFehler !! "
                << "Chromsomenlaenge groesser als Nukleotideauswahl !!";
     for (int i=StartChromosomLength; i > 0; i--) {
       long Rand;
@@ -40,7 +41,7 @@ SalesChromosom::SalesChromosom ( SalesChromosomen & env,
     assert (laenge() == StartChromosomLength);        
 }
 
-SalesChromosomen::SalesChromosomen( int Monk, int Cannibal,
+SalesChromosomen::SalesChromosomen(
 			    int MaxChromosomen,
 			    int StartChromosomNumber,
 			    int StartChromosomLength,
@@ -59,12 +60,12 @@ SalesChromosomen::SalesChromosomen( int Monk, int Cannibal,
 		InversionFreq, TranslocationFreq, AsymXOverFreq,
 		CrossVal, MutationFreq
 	      ),
-  TheGame( Monk, Cannibal, 1 ),
-  WorstDistance (0),
-  BestDistance (-1),
-  Flag (0),
+  TheGame( 1 ),
+  NoImproving(1),
   NoImprovingCrossingOvers(NoImprovingCrossingOvers),
-  NoImproving(1)
+  Flag (0),
+  WorstDistance (0),
+  BestDistance (-1)
 { 
   // StartGene zufaellig setzen !
   for (int i=StartChromosomNumber ; i > 0  ; i--) {
@@ -75,9 +76,9 @@ SalesChromosomen::SalesChromosomen( int Monk, int Cannibal,
   assert (laenge()==StartChromosomNumber);
 }
 
-SalesChromosomen::SalesChromosomen( int Monk, int Cannibal,
+SalesChromosomen::SalesChromosomen(
 			    int MaxChromosomen,
-			    char *StartGenFile,
+			    const std::string& StartGenFile,
 			    int Nukleotide,
 			    SpliceCodeInfo *ptrSpliceCodeInfo,
 			    long InversionFreq,
@@ -93,17 +94,17 @@ SalesChromosomen::SalesChromosomen( int Monk, int Cannibal,
 		InversionFreq, TranslocationFreq, AsymXOverFreq,
 		CrossVal, MutationFreq
 	      ),
-  TheGame( Monk, Cannibal, 1 ),
-  WorstDistance (0),
-  BestDistance (-1),
-  Flag (0),
+  TheGame( 1 ),
+  NoImproving(1),
   NoImprovingCrossingOvers(NoImprovingCrossingOvers),
-  NoImproving(1)
+  Flag (0),
+  WorstDistance (0),
+  BestDistance (-1)
 { }
 
 double SalesChromosomen::Fitness (const Chromosom &Lsg)
 {
-  double Distance = TheGame.Play (Lsg,FALSE);
+  double Distance = TheGame.Play (Lsg, false);
 
   if (Distance > WorstDistance)	{
     WorstDistance = Distance;
@@ -114,17 +115,17 @@ double SalesChromosomen::Fitness (const Chromosom &Lsg)
   return (WorstDistance - Distance) / WorstDistance;
 }
 
-int SalesChromosomen::Evolution (double GoalFitness, char *chrptrPtkFile,
+int SalesChromosomen::Evolution (double GoalFitness, const std::string& chrptrPtkFile,
 			    double BirthRate, int Bigamie
 			   )
 {
-  double BestEverAverageFitness=-1,
-	 CutFitness = 0; 	// Der Cut beim Sterben
+  (void) GoalFitness;
+  double CutFitness = 0; 	// Der Cut beim Sterben
   int stop=0;
 
   InitFitness() ;
-  if (chrptrPtkFile != NULL) {
-    if ((fileptrPtk=fopen (chrptrPtkFile, "wt")) == NULL)
+  if( !chrptrPtkFile.empty() ) {
+    if ((fileptrPtk=fopen (chrptrPtkFile.c_str(), "wt")) == NULL)
       INT_ERR (__LINE__);
   } else fileptrPtk = NULL;
 
@@ -180,7 +181,7 @@ int SalesChromosomen::Evolution (double GoalFitness, char *chrptrPtkFile,
 
   if (fileptrPtk != NULL) fclose (fileptrPtk);
 
-  TheGame.Play (TheBestEver,TRUE);
+  TheGame.Play (TheBestEver, true);
 
   return Generation;
 }
@@ -209,9 +210,9 @@ int SalesChromosomen::CreateNewSymChromosom (Chromosom &dest, int m, int w,
   # ifndef NDEBUG
       if (THIS[w].laenge() != THIS[m].laenge() ||
 	  THIS[w].laenge() != dest.laenge())
-	  cout << endl << "THIS[w].laenge() = " << THIS[w].laenge()
-	       << endl << "THIS[m].laenge() = " << THIS[m].laenge()
-	       << endl << "dest.laenge()    = " << dest.laenge();
+	  std::cout << std::endl << "THIS[w].laenge() = " << THIS[w].laenge()
+	       << std::endl << "THIS[m].laenge() = " << THIS[m].laenge()
+	       << std::endl << "dest.laenge()    = " << dest.laenge();
   # endif
 
   do {
@@ -257,27 +258,26 @@ int SalesChromosomen::CreateNewSymChromosom (Chromosom &dest, int m, int w,
     }
   } while (done==0);
 
-  # ifndef NDEBUG
-      # include "menge.h"
-
+  #ifndef NDEBUG
       // Ueberpruefung, ob jedes Element nur einmal vorhanden ist
       Menge<NukleoTyp> test;
 
-      for (int j = 0; j < dest.laenge(); j++)
-	test.fuegeEin (dest[j]);
+      for (int j = 0; j < dest.laenge(); j++) {
+          test.fuegeEin (dest[j]);
+      }
       if (dest.laenge() != THIS[w].laenge() || test.card() != dest.laenge()){
 
-	cout << "\ndest:\n" << dest
-	     << endl << "THIS[m].laenge() = " << THIS[m].laenge()
-	     << endl << "THIS[w].laenge() = " << THIS[w].laenge()
-	     << endl << "test.laenge()    = " << test.card()
-	     << endl;
+          std::cout << "\ndest:\n" << dest
+                  << std::endl << "THIS[m].laenge() = " << THIS[m].laenge()
+                  << std::endl << "THIS[w].laenge() = " << THIS[w].laenge()
+                  << std::endl << "test.laenge()    = " << test.card()
+                  << std::endl;
       }
       assert (test.card() == dest.laenge());
       assert (
-	      dest.laenge() == THIS[m].laenge() &&
-	      dest.laenge() == THIS[w].laenge()
-	     );
+              dest.laenge() == THIS[m].laenge() &&
+              dest.laenge() == THIS[w].laenge()
+      );
   # endif
   return 1;
 }
@@ -422,8 +422,8 @@ int SalesChromosomen::Echo()
 	((double)(EvolutionEnd-EvolutionStart))/((double)(GetGeneration()-1)) );
 
     }
-    printf ("\n\nGenerationen / Evolutionsdauer        : %3d  /  %3d s\n",
-	Generation, EvolutionEnd-EvolutionStart);
+    printf ("\n\nGenerationen / Evolutionsdauer        : %3d  /  %3ld s\n",
+            Generation, EvolutionEnd-EvolutionStart);
   }
 
   # ifdef __BORLANDC__
@@ -452,8 +452,9 @@ int SalesChromosomen::CalcWholeFitness (void)
     ChromLenSum+=ChromLen;
     if(ChromosomenLenMin>ChromLen) ChromosomenLenMin=ChromLen;
     if(ChromosomenLenMax<ChromLen) ChromosomenLenMax=ChromLen;
-    if ((TempFitness = THIS[i].GetFitness())>2*MASCHINE::eps)
-      ChromBetterZeroNumber++ ;
+    if ((TempFitness = THIS[i].GetFitness())>2*MASCHINE::epsilon) {
+        ChromBetterZeroNumber++ ;
+    }
     Total          += TempFitness ;
     if (GetBestDistance() > .5 + WorstDistance - TempFitness * WorstDistance
         || GetBestDistance()<0.0 )
@@ -488,7 +489,7 @@ void SalesChromosomen::Protokoll()
   if (fileptrPtk != NULL) {
     if (EvolutionEnd == 0) {
        fprintf (fileptrPtk, "=======================================================\n\n\n");
-	 fprintf (fileptrPtk, "\nGeneration / Generierungsdauer        : %3d  /  %d s\n",
+	 fprintf (fileptrPtk, "\nGeneration / Generierungsdauer        : %3d  /  %ld s\n",
 	     Generation, GenerationEnd-GenerationStart );
 	   fprintf (fileptrPtk, "Populationsgroesse                    : %3d\n",
 	     laenge());
@@ -522,7 +523,7 @@ void SalesChromosomen::Protokoll()
 	 fprintf (fileptrPtk, "Avrg. Generationsdauer                  : %f s / Generation\n",
 	   ((double) (EvolutionEnd-EvolutionStart))/((double)(GetGeneration()-1)) );
 	     }
-	 fprintf (fileptrPtk, "\nGenerationen / Evolutionsdauer        : %3d /  %3d s\n",
+	 fprintf (fileptrPtk, "\nGenerationen / Evolutionsdauer        : %3d /  %3ld s\n",
 	     Generation, EvolutionEnd-EvolutionStart);
     }
   }

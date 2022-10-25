@@ -11,7 +11,7 @@
 // Sven Goethel * http://www.jausoft.com - mailto:info@jausoft.com
 // Bielefeld, den 11.3.1994.
 
-# include "rivergen.h"
+# include "river_gen.h"
 
 RiverProblem::RiverProblem( int Monk, int Cannibal,
 			    int MaxChromosomen,
@@ -36,7 +36,7 @@ RiverProblem::RiverProblem( int Monk, int Cannibal,
 
 RiverProblem::RiverProblem( int Monk, int Cannibal,
 			    int MaxChromosomen,
-			    char *StartGenFile,
+			    const std::string& StartGenFile,
 			    int Nukleotide,
 			    SpliceCodeInfo *ptrSpliceCodeInfo,
 			    long InversionFreq,
@@ -56,7 +56,7 @@ RiverProblem::RiverProblem( int Monk, int Cannibal,
 
 double RiverProblem::Fitness (const Chromosom &Lsg)
 {
-  return ( TheGame.Play(Lsg,FALSE) );
+  return ( TheGame.Play(Lsg, false) );
 }
 
 

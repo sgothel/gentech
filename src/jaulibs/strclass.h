@@ -30,27 +30,26 @@
 # ifndef _STRCLASS_H
   # define _STRCLASS_H
 
-  # include <iostream.h>
-  # include <stdio.h>
-  # include <string.h>
+  # include <iostream>
+  # include <cstdio>
+  # include <cstring>
   # include "interror.h"
-  # include <malloc.h>
 
   class StrClass {
 
-  friend ostream& operator<< (ostream& OS, StrClass& str);
+  friend std::ostream& operator<< (std::ostream& OS, StrClass& str);
 
   public:
-     StrClass(void) { StrPtr=NULL; }
+     StrClass() : StrPtr(nullptr), m_length(0) {}
      StrClass(const StrClass &m) { copy(m); }
      StrClass(const char *m) { copy(m); }
-     ~StrClass(void) { dest(); }
+     ~StrClass() { dest(); }
      StrClass& operator=(const StrClass&);
      // not using the implicit conversion, because the costs of run-time ...
      StrClass& operator=(const char *);
      void strcat(const StrClass &m);
      // the standarised operator at Bjarne Stroustrup's suggestion.
-     StrClass& operator+=(const StrClass &m) { StrCat(m); return *this; }
+     StrClass& operator+=(const StrClass &m) { strcat(m); return *this; }
      int operator==(const StrClass &m) const;
      int operator!=(const StrClass &m) const { return !(*this==m); }
      int operator>=(const StrClass &m) const;
@@ -93,12 +92,12 @@
      void copy(const char *);
      void copy(const StrClass &);
      char *StrPtr; 
-     int length;
+     int m_length;
   };
 
   // the global operator at Bjarne Stroustrup's suggestion.
   StrClass operator+(const StrClass &m, const StrClass &n) ; 
 
-  ostream& operator<< (ostream& OS, StrClass& str);
+  std::ostream& operator<< (std::ostream& OS, StrClass& str);
 
 # endif

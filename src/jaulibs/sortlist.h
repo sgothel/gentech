@@ -56,13 +56,14 @@
 	// fuegeEin RETURN : neuer Index, oder -1 fuer Fehler
 	int     fuegeEin(const Tmp&);
 	int     findeElement(const Tmp& x) const;
+
 	// Spezielle Zugriffsrechte fuer SortListe
-	Liste<Tmp>::loesche;
-	Liste<Tmp>::operator !;
-	Liste<Tmp>::operator[];
-	Liste<Tmp>::laenge;
-	Liste<Tmp>::Referenz2Index;
-	Liste<Tmp>::istElement;
+	using Liste<Tmp>::loesche;
+	using Liste<Tmp>::operator !;
+	using Liste<Tmp>::operator[];
+	using Liste<Tmp>::laenge;
+	using Liste<Tmp>::Referenz2Index;
+	using Liste<Tmp>::istElement;
 
   private:
 	// RETURN >= 0 gefunden index

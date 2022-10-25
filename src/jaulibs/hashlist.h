@@ -39,7 +39,7 @@
   # else
 	# define HEAP_CHECK() 1
   # endif
-  # include <math.h>
+  # include <cmath>
 
   // Die HashListe enthaelt ein Array von SortListe<int> !!!
   // und ist eine ganz virtuelle Klasse (pure virtual).

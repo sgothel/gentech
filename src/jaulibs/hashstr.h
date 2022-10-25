@@ -36,7 +36,7 @@
   # else
 	# define HEAP_CHECK() 2
   # endif
-  # include <math.h>
+  # include <cmath>
   # include "strclass.h"
 
   // Die HashStrClassListe enthaelt ein Array von SortListe<int> !!!

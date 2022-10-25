@@ -13,13 +13,13 @@
 
 # include "river.h"
 
-double RiverGame::Play(const Chromosom& Lsg, int Gfx)
+double RiverGame::Play(const Chromosom& Lsg, bool Gfx)
 {
-  int ChromPos=0, Regeln = TRUE, BoatDir=TO_RIVERSIDE_B;
+  int ChromPos=0, Regeln = true, BoatDir=TO_RIVERSIDE_B;
   RiversideAMonk=Monk;          RiversideBMonk=0;
   RiversideACannibal=Cannibal;  RiversideBCannibal=0;
 
-  if(Gfx==TRUE) {
+  if(Gfx==true) {
     printf("\n\n\nFlussproblem mit %d Moenche und %d Kannibalen.",
      Monk, Cannibal );
     printf("\nLoesungschromosom hat %d Zuege.", Lsg.laenge());
@@ -29,7 +29,7 @@ double RiverGame::Play(const Chromosom& Lsg, int Gfx)
     printf(" %5d M, %5d K\n", RiversideBMonk, RiversideBCannibal );
   }
   while (    ChromPos<Lsg.laenge()
-	  && Regeln == TRUE
+	  && Regeln == true
 	  && (RiversideBMonk+RiversideBCannibal) /
 	     (double)( Monk+Cannibal) < Frontier
 	)
@@ -37,7 +37,7 @@ double RiverGame::Play(const Chromosom& Lsg, int Gfx)
     if( BoatDir == TO_RIVERSIDE_B ) {
       // TO_RIVERSIDE_B
       Move( Lsg[ ChromPos ] );
-      if(Gfx==TRUE) {
+      if(Gfx==true) {
 	printf("\n\n                           --- %d M. %d K. --->     ",
 	  GetMonkNumber( Lsg[ChromPos] ),
 	  GetCannibalNumber( Lsg[ChromPos] ) );
@@ -45,7 +45,7 @@ double RiverGame::Play(const Chromosom& Lsg, int Gfx)
 	  RiversideAMonk, RiversideACannibal );
 	printf(" %5d M, %5d K\n", RiversideBMonk, RiversideBCannibal );
       }
-      if( ( Regeln = Referee() ) == FALSE ) {
+      if( ( Regeln = Referee() ) == false ) {
 	// Die nicht regelgerechte Transportation Rueckgaengig machen.
 	MoveBack( Lsg[ ChromPos ] );
 	if(ChromPos>0) {
@@ -56,7 +56,7 @@ double RiverGame::Play(const Chromosom& Lsg, int Gfx)
     } else {
       // TO_RIVERSIDE_A
       MoveBack( Lsg[ ChromPos ] );
-      if(Gfx==TRUE) {
+      if(Gfx==true) {
 	printf("\n                           <--- %d M. %d K. ---     ",
 	  GetMonkNumber( Lsg[ChromPos] ),
 	  GetCannibalNumber( Lsg[ChromPos] ) );
@@ -65,7 +65,7 @@ double RiverGame::Play(const Chromosom& Lsg, int Gfx)
 	printf(" %5d M, %5d K\n", RiversideBMonk, RiversideBCannibal );
 	getchar();
       }
-      if( ( Regeln = Referee() ) == FALSE ) {
+      if( ( Regeln = Referee() ) == false ) {
 	// Die nicht regelgerechte Transportation Rueckgaengig machen.
 	Move( Lsg[ ChromPos ] );
       }
@@ -75,16 +75,16 @@ double RiverGame::Play(const Chromosom& Lsg, int Gfx)
       ( ( BoatDir == TO_RIVERSIDE_A ) ? TO_RIVERSIDE_B : TO_RIVERSIDE_A );
   }
 
-  if(Gfx==TRUE) {
+  if(Gfx==true) {
     printf("\n\nFitness : %lf",
       ( (double)RiversideBCannibal+(double)RiversideBMonk ) /
       ( (double)Cannibal+(double)Monk )
     );
 
-    if(Regeln==TRUE && ChromPos<Lsg.laenge() ) {
+    if(Regeln==true && ChromPos<Lsg.laenge() ) {
       printf("\n\nLoesung mit %d Zuegen gefunden !!!! <TASTE DRUECKEN>",
 	ChromPos );
-    } else if(Regeln==FALSE) {
+    } else if(Regeln==false) {
       printf("\n\nKeine Loesung mit %d Zuegen gefunden !!!! <TASTE DRUECKEN>",
 	ChromPos );
     } else {
@@ -99,7 +99,7 @@ double RiverGame::Play(const Chromosom& Lsg, int Gfx)
 	 );
 }
 
-int RiverGame::Referee (void) const
+bool RiverGame::Referee (void) const
 {
   if ( RiversideAMonk    <0               ||
        RiversideACannibal<0               ||
@@ -107,15 +107,15 @@ int RiverGame::Referee (void) const
        RiversideBCannibal<0               ||
        ( RiversideACannibal>RiversideAMonk && RiversideAMonk>0 ) ||
        ( RiversideBCannibal>RiversideBMonk && RiversideBMonk>0 )
-     ) return FALSE;
+     ) return false;
 
   if ( RiversideBCannibal-RiversideBMonk > 4 ) {
     // Wenn mehr als 4 Kannibalen mehr am Zielufer sind,
     // so gibt es keine Moeglichkeit mehr Moenche nachzuholen !!!
-    return FALSE;
+    return false;
   }
 
-  return TRUE;
+  return true;
 }
 
 void RiverGame::Move( int move )
