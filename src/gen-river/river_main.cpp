@@ -63,8 +63,9 @@ int main (int argc, const char* argv[]) {
           Input("\nMissionare [8] : ", Monk, 8 );
           Input("\nKannibalen [4] : ", Cannibal, 4 );
           printf("\n\n");
+          RiverProblem* MyRiverProblem;
           if ( MyGenParameter.FileName.empty() ) {
-              RiverProblem MyRiverProblem( Monk, Cannibal,
+              MyRiverProblem = new RiverProblem( Monk, Cannibal,
                       MyGenParameter.MaxChromosomen,
                       MyGenParameter.StartChromosomNumber,
                       MyGenParameter.StartChromosomLength,
@@ -76,15 +77,8 @@ int main (int argc, const char* argv[]) {
                       MyGenParameter.CrossVal,
                       MyGenParameter.MutationFreq
               ) ;
-              MyRiverProblem.Evolution ( 1, MyGenParameter.FileNameHeader + ".ptk",
-                      MyGenParameter.BirthRate,
-                      MyGenParameter.Bigamie,
-                      MyGenParameter.MaxNoImprove
-              );
-              MyRiverProblem.Save(MyGenParameter.FileNameHeader + ".pop");
-              MyRiverProblem.GetTheBestEverChromosom().Save(MyGenParameter.FileNameHeader + ".gen");
           } else {
-              RiverProblem MyRiverProblem( Monk, Cannibal,
+              MyRiverProblem = new RiverProblem( Monk, Cannibal,
                       MyGenParameter.MaxChromosomen,
                       MyGenParameter.FileName,
                       MyGenParameter.Nukleotide,
@@ -95,14 +89,32 @@ int main (int argc, const char* argv[]) {
                       MyGenParameter.CrossVal,
                       MyGenParameter.MutationFreq
               ) ;
-              MyRiverProblem.Evolution ( 1, MyGenParameter.FileNameHeader + ".ptk",
-                      MyGenParameter.BirthRate,
-                      MyGenParameter.Bigamie,
-                      MyGenParameter.MaxNoImprove
-              );
-              MyRiverProblem.Save(MyGenParameter.FileNameHeader + ".pop");
-              MyRiverProblem.GetTheBestEverChromosom().Save(MyGenParameter.FileNameHeader + ".gen");
           }
+          MyRiverProblem->Evolution ( 1, MyGenParameter.FileNameHeader + ".ptk",
+                  MyGenParameter.BirthRate,
+                  MyGenParameter.Bigamie,
+                  MyGenParameter.MaxNoImprove
+          );
+          MyRiverProblem->Save(MyGenParameter.FileNameHeader + ".pop");
+          const Chromosom& theBest = MyRiverProblem->GetTheBestEverChromosom();
+          theBest.Save(MyGenParameter.FileNameHeader + ".gen");
+          {
+              std::string fname = MyGenParameter.FileNameHeader + ".gen";
+              Chromosom test( *MyRiverProblem, fname);
+              if( theBest != test ) {
+                  printf("Error saving '%s'.\nTheBest:\n", fname.c_str());
+                  theBest.Ausgabe(std::cout);
+                  printf("\nReadBack:\n");
+                  test.Ausgabe(std::cout);
+                  printf("\n");
+              } else {
+                  printf("Validated '%s'.\n", fname.c_str());
+                  theBest.Ausgabe(std::cout);
+                  printf("\n");
+              }
+          }
+          MyRiverProblem->TheGame.Play(theBest, true);
+          delete MyRiverProblem;
           printf("\007\n\n Fertig. <BITTE RETURN DRUECKEN>");
           getchar();
       } else if(choosen==2) {
