@@ -45,9 +45,6 @@ obj/sales_gen.o: src/gen-salesman/sales_gen.cpp
 obj/gentech.o: $(GENTECHLIB)/gentech.cpp
 	$(CPP) -o $@ $(CPPFLAGS) $<
 
-obj/maschine.o: $(JAULIBS)/maschine.cpp
-	$(CPP) -o $@ $(CPPFLAGS) $<
-
 obj/interror.o: $(JAULIBS)/interror.cpp
 	$(CPP) -o $@ $(CPPFLAGS) $<
 
@@ -57,7 +54,6 @@ OBJS_RIVER =  \
  obj/river.o \
  obj/river_gen.o \
  obj/gentech.o \
- obj/maschine.o \
  obj/interror.o
 
 OBJS_SMAN =  \
@@ -66,7 +62,6 @@ OBJS_SMAN =  \
  obj/sales.o \
  obj/sales_gen.o \
  obj/gentech.o \
- obj/maschine.o \
  obj/interror.o
 
 bin/rivergen: $(OBJS_RIVER)

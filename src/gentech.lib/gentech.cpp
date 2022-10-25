@@ -13,9 +13,9 @@
 
 #include "gentech.h"
 #include "random.h"
-#include "maschine.h"
 
 #include <climits>
+#include <limits>
 
 // GLOBALE VARIABLEN !!!
 char GenTechVersion[]="2.3";
@@ -34,9 +34,7 @@ std::ostream& operator<< (std::ostream& OS, Liste<NukleoTyp>& List)
 
 // STATISCHE-KLASSEN-GLOBALE VARIABLEN !!!
 
-Chromosom::Chromosom ( Chromosomen & env,
-		       int StartChromosomLength
-		     )
+Chromosom::Chromosom ( Chromosomen & env, int StartChromosomLength )
 : Liste<NukleoTyp>(), env(env), Fitness(0)
 // Zufaellig erzeugte Chromosomen
 {
@@ -50,45 +48,7 @@ Chromosom::Chromosom ( Chromosomen & env,
 Chromosom::Chromosom ( Chromosomen & env, const std::string& FileName )
 : Liste<NukleoTyp>(), env(env), Fitness(0)
 {
-  FILE *file;
-  int i, len;
-
-  if ((file=fopen(FileName.c_str(), "rb")) == nullptr) INT_ERR (__LINE__);
-
-  // 4-7-94, 3:3 PM
-  // Liest als erstes die Groesse des abgespeicherten NukleoTyps
-  // aus dem File
-  short NukleoLen;
-  if (fread (&NukleoLen, sizeof (NukleoLen), 1, file) != 1) INT_ERR (__LINE__);
-  if (NukleoLen <= (short)sizeof(double) && NukleoLen > (short)sizeof(NukleoTyp)) {
-	std::cerr << "!! WARNUNG !!\n"
-	     << "   Laenge des Datentyps der gespeicherten Nuklotide\n"
-	     << "   ist kleiner als das abgespeicherte Format\n" 
-	     << "   Weitermachen ? (j/n)   ";
-
-	int c = std::cin.get();
-	if (tolower (c) != 'j') exit (0);
-  } else {
-    // Wahrscheinlich altes Dateiformat:
-    // 'NukleoLen' auf aktuelle Laenge von 'NukleoTyp' setzen
-    // und den Dateizeiger zuruecksetzen
-    if (NukleoLen >= (short)sizeof(double)) {
-        NukleoLen = sizeof (NukleoTyp);
-        std::cerr << "\nWahrscheinlich altes Dateiformat\nSetze Datei zurueck\n";
-        fseek (file, 0, SEEK_SET);
-    }
-  }
-  // 4-7-94, 3:3 PM
-
-  // Puffer der richtigen Laenge bereit stellen
-  char *save= new char[NukleoLen];
-  if (fread (&len, sizeof (len), 1, file) == 0) INT_ERR (__LINE__);
-  for(i=0; i<len; i++) {
-    if (fread (save, NukleoLen, 1, file) == 0) INT_ERR (__LINE__);
-    fuegeEin ( (NukleoTyp)*save, i);
-  }
-  delete [] save;
-  fclose(file);
+  Load(FileName);
 }
 
 void Chromosom::Copy (const Chromosom &a)
@@ -109,39 +69,66 @@ Chromosom& Chromosom::operator=(const Chromosom& m)
   return *this;
 }
 
-int Chromosom::operator==(const Chromosom& ch) const
+bool Chromosom::operator==(const Chromosom& ch) const
 {
-  if (this == &ch) return 1;             // gleiches Chromosom
-  if (THIS.laenge() != ch.laenge())      // garantiert Ungleich
-     return 0;
-
+  if (this == &ch) { return true; };     // gleiches Chromosom
+  if (THIS.laenge() != ch.laenge()) {    // garantiert Ungleich
+     return false;
+  }
   int i;
-
-  for (i=0; i < laenge() && THIS[i] == ch[i]; i++); // Ueberprufung
-
-  if (i == laenge())    return 1;       // Ziel       erreicht => this == ch
-  else                  return 0;       // Ziel nicht erreicht => this != ch
+  for( i=0; i < laenge() && THIS[i] == ch[i]; i++ ) ; // Ueberprufung
+  return i == laenge();
 }
 
-int Chromosom::Save (const std::string& FileName) const
+void Chromosom::Save(const std::string& FileName) const
 {
   FILE *file;
-  int i;
-  long len;
+  if( ( file=fopen(FileName.c_str(),"wb") ) == nullptr ) { INT_ERR (__LINE__); }
 
-  if ((file=fopen(FileName.c_str(),"wb")) == nullptr) INT_ERR (__LINE__);
-// 4-7-94, 2:51 PM
-// Speichert die Groesse des NukleoDatenTyps als erstes in der Datei
-  short NukleoLen = sizeof (NukleoTyp);
-  if (fwrite (&NukleoLen, sizeof (NukleoLen), 1, file) != 1) INT_ERR (__LINE__);
-// 4-7-94, 2:51 PM
-  len=laenge();
-  if (fwrite (&len, sizeof(len), 1, file) != 1) INT_ERR (__LINE__);
-  for(i=0; i<len; i++)
-    if (fwrite (&((*this)[i]), sizeof (NukleoTyp), 1, file) != 1)
-	INT_ERR (__LINE__);
+  {
+    // 4-7-94, 2:51 PM
+    // Speichert die Groesse des NukleoDatenTyps als erstes in der Datei
+      const uint16_t NukleoLen = sizeof(NukleoTyp);
+      if( fwrite (&NukleoLen, sizeof (NukleoLen), 1, file) != 1 ) { INT_ERR (__LINE__); }
+    // 4-7-94, 2:51 PM
+  }
+  const int len=laenge();
+  if( fwrite (&len, sizeof(len), 1, file) != 1 ) { INT_ERR (__LINE__); } // FIXME: Use fixed width type
+  for(int i=0; i<len; ++i) {
+    if( fwrite (&((*this)[i]), sizeof (NukleoTyp), 1, file) != 1 ) {
+        INT_ERR (__LINE__);
+    }
+  }
   fclose(file);
-  return 1;
+}
+
+void Chromosom::Load(const std::string& FileName) {
+    FILE *file;
+    if ((file=fopen(FileName.c_str(), "rb")) == nullptr) { INT_ERR (__LINE__); }
+
+    {
+        // 4-7-94, 3:3 PM
+        // Liest als erstes die Groesse des abgespeicherten NukleoTyps
+        // aus dem File
+        uint16_t NukleoLen;
+        if( fread (&NukleoLen, sizeof (NukleoLen), 1, file) != 1 ) { INT_ERR (__LINE__); }
+        if( NukleoLen != sizeof(NukleoTyp) ) {
+          std::cerr << "!! ERROR !!\n"
+               << "   Laenge des Datentyps der gespeicherten Nuklotide\n"
+               << "   ist kleiner als das abgespeicherte Format\n";
+          exit (0);
+        }
+        // 4-7-94, 3:3 PM
+    }
+    // Puffer der richtigen Laenge bereit stellen
+    NukleoTyp value;
+    int len;
+    if (fread (&len, sizeof (len), 1, file) == 0) { INT_ERR (__LINE__); } // FIXME: Use fixed width type
+    for(int i=0; i<len; ++i) {
+      if (fread (&value, sizeof(value), 1, file) == 0) { INT_ERR (__LINE__); }
+      fuegeEin ( value, i);
+    }
+    fclose(file);
 }
 
 int Chromosom::GetNukleotidNumber (int i) const
@@ -170,41 +157,42 @@ NukleoTyp Chromosom::GetUserNukleotidValue (int i) const
   return env.UserNukleoValScale*(i-1);
 }
 
-int Chromosom::FindIntron (int &von, int &bis) const
+bool Chromosom::FindIntron (int &von, int &bis) const
 {
-  int done=0, i, i2, i3;
+    bool done = false;
+    int i, i2, i3;
 
-  if (bis-von+1 >= env.ptrSpliceCodeInfo->Length)
-  {
-    // Spleissen..Anfang suchen
-    i=von; i2=0;
-    while (i <= bis && env.ptrSpliceCodeInfo->SpliceCode[i2] != 0) {
-      if (GetNukleotidNumber (i) == env.ptrSpliceCodeInfo->SpliceCode[i2]) {
-	  i2++;
-	  i++;
-      }
-      else { i2=0; von=++i; }
+    if (bis-von+1 >= env.ptrSpliceCodeInfo->Length)
+    {
+        // Spleissen..Anfang suchen
+        i=von; i2=0;
+        while (i <= bis && env.ptrSpliceCodeInfo->SpliceCode[i2] != 0) {
+            if (GetNukleotidNumber (i) == env.ptrSpliceCodeInfo->SpliceCode[i2]) {
+                i2++;
+                i++;
+            }
+            else { i2=0; von=++i; }
+        }
+        if (i < bis) {
+            assert (env.ptrSpliceCodeInfo->SpliceCode[i2] == 0) ;
+            // von gefunden...
+            // Spleissen..Ende suchen
+            i3=i;
+            i=++i2;
+            while (i3 <= bis && env.ptrSpliceCodeInfo->SpliceCode[i2] != 0) {
+                if (GetNukleotidNumber(i3) == env.ptrSpliceCodeInfo->SpliceCode[i2])
+                    i2++;
+                else i2=i;
+                i3++;
+            }
+            if (env.ptrSpliceCodeInfo->SpliceCode[i2] == 0) {
+                // bis gefunden...
+                bis=i3-1;
+                done=true;
+            }
+        }
     }
-    if (i < bis) {
-      assert (env.ptrSpliceCodeInfo->SpliceCode[i2] == 0) ;
-      // von gefunden...
-      // Spleissen..Ende suchen
-      i3=i;
-      i=++i2;
-      while (i3 <= bis && env.ptrSpliceCodeInfo->SpliceCode[i2] != 0) {
-	if (GetNukleotidNumber(i3) == env.ptrSpliceCodeInfo->SpliceCode[i2])
-	     i2++;
-	else i2=i;
-	i3++;
-      }
-      if (env.ptrSpliceCodeInfo->SpliceCode[i2] == 0) {
-	// bis gefunden...
-	bis=i3-1;
-	done=1;
-      }
-    }
-  }
-  return done;
+    return done;
 }
 
 int Chromosom::Splicing (void)
@@ -237,9 +225,9 @@ int Chromosom::Splicing (void)
   return NNukleotide;
 }
 
-int Chromosom::InsertIntrons (int von, int length)
+void Chromosom::InsertIntrons (int von, int length)
 {
-  int done=0, i, iRumpf;
+  int i, iRumpf;
 
   if (env.ptrSpliceCodeInfo != nullptr &&
       env.ptrSpliceCodeInfo->SpliceCode[0] != 0 &&
@@ -247,27 +235,24 @@ int Chromosom::InsertIntrons (int von, int length)
       length >= env.ptrSpliceCodeInfo->Length)
   {
     // StartSequenz einfuegen.
-    for (i=0; env.ptrSpliceCodeInfo->SpliceCode[i] != 0; i++, von++, length--)
-      fuegeEin ( GetUserNukleotidValue(env.ptrSpliceCodeInfo->SpliceCode[i]),
-                 von);
+    for (i=0; env.ptrSpliceCodeInfo->SpliceCode[i] != 0; i++, von++, length--) {
+      fuegeEin ( GetUserNukleotidValue(env.ptrSpliceCodeInfo->SpliceCode[i]), von);
+    }
     // Stelle fuer Rumpf merken.
     iRumpf=von;
     // EndSequenz einfuegen.
-    for (i++; env.ptrSpliceCodeInfo->SpliceCode[i] != 0; i++, von++, length--)
-      fuegeEin ( GetUserNukleotidValue (env.ptrSpliceCodeInfo->SpliceCode[i]),
-                 von);
+    for (i++; env.ptrSpliceCodeInfo->SpliceCode[i] != 0; i++, von++, length--) {
+      fuegeEin ( GetUserNukleotidValue (env.ptrSpliceCodeInfo->SpliceCode[i]), von);
+    }
     // Rumpf fuellen.
     while (length > 0) {
-      fuegeEin (Random (env.UserNukleoMinVal, env.UserNukleoMaxVal),
-			iRumpf);
+      fuegeEin (Random (env.UserNukleoMinVal, env.UserNukleoMaxVal), iRumpf);
       length--;
     }
-    done=1;
   }
-  return done;
 }
 
-int Chromosom::Inversion (void)
+void Chromosom::Inversion (void)
 {
   Chromosom save(env);
   int start, end, i;
@@ -284,10 +269,9 @@ int Chromosom::Inversion (void)
     assert (end-i < save.laenge() && end-i >= 0);
     (*this)[i]=save[end-i];
   }
-  return 1;
 }
 
-int Chromosom::Translocation (void)
+void Chromosom::Translocation (void)
 {
   Chromosom save(env);
   int start, end, dest, i;
@@ -308,7 +292,6 @@ int Chromosom::Translocation (void)
   dest = Random (0, laenge()-1);
   assert (dest >= 0);
   for (i=0; i<save.laenge(); i++) (*this).fuegeEin (save[i], dest+i);
-  return 1;
 }
 
 // *******************************************************************
@@ -374,65 +357,53 @@ Chromosomen::Chromosomen (NukleoTyp UserNukleoMinVal,
   UserNukleoValScale(1),
   Nukleotide(Nukleotide)
 {
-  // StartGene aus dem File holen ! ....
-  FILE *file;
-  int ChromLen, ChromQuantity, i, j;
+    // StartGene aus dem File holen ! ....
+    FILE *file;
 
-  CalcParameter();
+    CalcParameter();
 
-  # ifdef __BORLANDC__
-    randomize();
-  # endif
-  if ((file=fopen(StartGenFile.c_str(),"rb") ) == nullptr )
-  {
-  	fprintf(stderr,"can not open file %s\n", StartGenFile.c_str());
-  	INT_ERR(__LINE__);
-  }
-  // 4-7-94, 3:3 PM
-  // Liest als erstes die Groesse des abgespeicherten NukleoTyps
-  // aus dem File
-  short NukleoLen;
-  if (fread (&NukleoLen, sizeof(NukleoLen), 1, file)!=1) INT_ERR(__LINE__);
-  if (NukleoLen <= (short)sizeof(double) && NukleoLen > (short)sizeof(NukleoTyp)) {
-    std::cerr << "!! WARNUNG !!\n"
-	     << "   Laenge des Datentyps der gespeicherten Nuklotide\n"
-	     << "   ist kleiner als das abgespeicherte Format\n"
-	     << "   Weitermachen ? (j/n)   ";
-
-	int c = std::cin.get();
-	if (tolower (c) != 'j') exit (0);
-  } else {
-    // Wahrscheinlich altes Dateiformat:
-    // 'NukleoLen' auf aktuelle Laenge von 'NukleoTyp' setzen
-    // und den Dateizeiger zuruecksetzen
-    if (NukleoLen >= (short)sizeof(double)) {
-        NukleoLen = sizeof (NukleoTyp);
-        std::cerr << "\nWahrscheinlich altes Dateiformat\nSetze Datei zurueck\n";
-        fseek (file, 0, SEEK_SET);
+    if ((file=fopen(StartGenFile.c_str(),"rb") ) == nullptr ) {
+        fprintf(stderr,"can not open file %s\n", StartGenFile.c_str());
+        INT_ERR(__LINE__);
     }
-  }
-  // 4-7-94, 3:3 PM
-
-  if (fread(&ChromQuantity, sizeof(ChromQuantity), 1, file)==0)
-	INT_ERR(__LINE__);
-
-  // Puffer der richtigen Laenge bereitstellen
-  char *save= new char[NukleoLen];
-  for (j=0; j<ChromQuantity; j++ ) {
-    Chromosom Gamma ( *this, 0 ) ;
-    assert (Gamma.laenge()==0);
-
-    if (fread(&ChromLen, sizeof(ChromLen), 1, file) == 0) INT_ERR (__LINE__);
-    for(i=0; i<ChromLen; i++) {
-      if (fread (save, NukleoLen, 1, file) == 0) INT_ERR(__LINE__);
-      Gamma.fuegeEin ((NukleoTyp )*save, i);
+    {
+        // 4-7-94, 3:3 PM
+        // Liest als erstes die Groesse des abgespeicherten NukleoTyps
+        // aus dem File
+        uint16_t NukleoLen;
+        if (fread (&NukleoLen, sizeof(NukleoLen), 1, file)!=1) { INT_ERR(__LINE__); }
+        if( NukleoLen != sizeof(NukleoTyp) ) {
+            std::cerr << "!! ERROR !!\n"
+                    << "   Laenge des Datentyps der gespeicherten Nuklotide\n"
+                    << "   ist kleiner als das abgespeicherte Format\n";
+            exit (0);
+        }
+        // 4-7-94, 3:3 PM
     }
-    assert (Gamma.laenge()==ChromLen);
-    fuegeEin (Gamma, j);
-  }
-  delete [] save;
-  assert (laenge()==ChromQuantity);
-  fclose (file);
+
+    // int ChromLen, ChromQuantity, i, j;
+    int ChromQuantity;
+    if (fread(&ChromQuantity, sizeof(ChromQuantity), 1, file)==0) { // FIXME: Use fixed width type
+        INT_ERR(__LINE__);
+    }
+
+    // Puffer der richtigen Laenge bereitstellen
+    NukleoTyp value;
+    for(int j=0; j<ChromQuantity; j++ ) {
+        Chromosom Gamma ( *this, 0 ) ;
+        assert (Gamma.laenge()==0);
+
+        int ChromLen;
+        if (fread(&ChromLen, sizeof(ChromLen), 1, file) == 0) { INT_ERR (__LINE__); } // FIXME: Use fixed width type
+        for(int i=0; i<ChromLen; i++) {
+            if (fread(&value, sizeof(value), 1, file) == 0) { INT_ERR(__LINE__); }
+            Gamma.fuegeEin (value, i);
+        }
+        assert (Gamma.laenge()==ChromLen);
+        fuegeEin (Gamma, j);
+    }
+    assert (laenge()==ChromQuantity);
+    fclose (file);
 }
 
 Chromosomen::Chromosomen ( NukleoTyp UserNukleoMinVal, NukleoTyp UserNukleoMaxVal,
@@ -488,10 +459,6 @@ Chromosomen::Chromosomen ( NukleoTyp UserNukleoMinVal, NukleoTyp UserNukleoMaxVa
   UserNukleoValScale(1),
   Nukleotide(Nukleotide)
 {
-  # ifdef __BORLANDC__
-    randomize();
-  # endif
-
   CalcParameter();
 
   // StartGene zufaellig setzen !
@@ -503,33 +470,33 @@ Chromosomen::Chromosomen ( NukleoTyp UserNukleoMinVal, NukleoTyp UserNukleoMaxVa
   assert (laenge()==StartChromosomNumber);
 }
 
-int Chromosomen::Save (const std::string& FileName) const
+void Chromosomen::Save (const std::string& FileName) const
 {
-  FILE *file;
-  int ChromLen, ChromQuantity, i, j;
+    FILE *file;
 
-  if((file=fopen(FileName.c_str(), "wb")) == nullptr) {
-      INT_ERR (__LINE__);
-  }
-  ChromQuantity=laenge();
-// 4-7-94, 2:51 PM
-// Speichert die Groesse des NukleoTyps als erstes im File ab
-  short NukleoLen=sizeof(NukleoTyp);
-  if (fwrite (&NukleoLen, sizeof (NukleoLen), 1, file) != 1) INT_ERR (__LINE__);
-// 4-7-94, 2:51 PM
-  if (fwrite (&ChromQuantity, sizeof (ChromQuantity), 1, file) != 1 )
-      INT_ERR (__LINE__);
-  for (j=0; j<ChromQuantity; j++ ) {
-    NukleoTyp save;
-    ChromLen=THIS[j].laenge();
-    if (fwrite (&ChromLen, sizeof (ChromLen), 1, file) != 1) INT_ERR (__LINE__);
-    for(i=0; i<ChromLen; i++) {
-      save=THIS[j][i];
-      if (fwrite (&save, sizeof (NukleoTyp), 1, file) != 1) INT_ERR (__LINE__);
+    if((file=fopen(FileName.c_str(), "wb")) == nullptr) {
+        INT_ERR (__LINE__);
     }
-  }
-  fclose(file);
-  return 1;
+    {
+        // 4-7-94, 2:51 PM
+        // Speichert die Groesse des NukleoTyps als erstes im File ab
+        const uint16_t NukleoLen=sizeof(NukleoTyp);
+        if (fwrite (&NukleoLen, sizeof (NukleoLen), 1, file) != 1) { INT_ERR (__LINE__); }
+        // 4-7-94, 2:51 PM
+    }
+    int ChromQuantity=laenge();
+    if (fwrite (&ChromQuantity, sizeof (ChromQuantity), 1, file) != 1 ) { // FIXME: Use fixed width type
+        INT_ERR (__LINE__);
+    }
+    for (int j=0; j<ChromQuantity; j++ ) {
+        const int ChromLen = THIS[j].laenge();
+        if (fwrite (&ChromLen, sizeof (ChromLen), 1, file) != 1) { INT_ERR (__LINE__); } // FIXME: Use fixed width type
+        for(int i=0; i<ChromLen; i++) {
+            NukleoTyp value = THIS[j][i];
+            if (fwrite (&value, sizeof (NukleoTyp), 1, file) != 1) { INT_ERR (__LINE__); }
+        }
+    }
+    fclose(file);
 }
 
 int Chromosomen::Evolution (double GoalFitness, const std::string& chrptrPtkFile,
@@ -538,7 +505,7 @@ int Chromosomen::Evolution (double GoalFitness, const std::string& chrptrPtkFile
 			   )
 {
   double BestEverAverageFitness=-1,
-	 Cut = 0; 	// Der Cut beim Sterben
+  Cut = 0; 	// Der Cut beim Sterben
   int NoImproving=0, stop=0;
 
   InitFitness() ;
@@ -616,7 +583,7 @@ void Chromosomen::InitFitness(void)
   CalcWholeFitness();
 }
 
-int Chromosomen::NewGeneration (double BirthRate, int Bigamie)
+void Chromosomen::NewGeneration (double BirthRate, int Bigamie)
 {
   Liste<int> ElternPaare;
 
@@ -678,12 +645,10 @@ int Chromosomen::NewGeneration (double BirthRate, int Bigamie)
     l -= 2 ;
   }
   assert (l == 0);
-
-  return 1;
 }
 
 
-int Chromosomen::NewGeneration (int Bigamie)
+void Chromosomen::NewGeneration (int Bigamie)
 {
   Liste<int> ElternPaare;
   int l=MaxChromosomen, w, i;
@@ -727,10 +692,8 @@ int Chromosomen::NewGeneration (int Bigamie)
   l=ElternPaare.laenge();
 
 
-  # ifndef NDEBUG
-    // alles ok ?? GERADE ANZAHL DER ELTERN !!!
-    assert (l%2==0);
-  # endif
+  // alles ok ?? GERADE ANZAHL DER ELTERN !!!
+  assert (l%2==0);
 
   // Neue Population...
   l=ElternPaare.laenge();
@@ -751,18 +714,18 @@ int Chromosomen::NewGeneration (int Bigamie)
     THIS[w].SetFitness(-1);
     l--;
   }
-  return 1;
 }
 
-int Chromosomen::LetDie (double cut)
+void Chromosomen::LetDie (double cut)
 {
   int i=0;
 
   while (i < laenge() && laenge() > MaxChromosomen) {
-    if (THIS[i].GetFitness() <= cut)
+    if (THIS[i].GetFitness() <= cut) {
       Kill (i);
-    else
+    } else {
       i++;
+    }
   }
 
   // Sicherheitsabfrage
@@ -770,14 +733,14 @@ int Chromosomen::LetDie (double cut)
     cut = GetXWorstFitness (laenge()-MaxChromosomen);
     i = 0;
     while (i < laenge() && laenge() > MaxChromosomen) {
-      if (THIS[i].GetFitness() <= cut)
-	Kill (i);
-      else
-	i++;
+      if (THIS[i].GetFitness() <= cut) {
+          Kill (i);
+      } else {
+          i++;
+      }
     }
   }
   assert (laenge() <= MaxChromosomen);
-  return 1;
 }
 
 int Chromosomen::RouletteSelect (void) const
@@ -799,9 +762,8 @@ int Chromosomen::RouletteSelect (void) const
   return ( (i<laenge()) ? i : laenge()-1);
 }
 
-int Chromosomen::CreateNewSymChromosom ( Chromosom &dest, int m, int w,
-					 SortListe<int> &CrossPoints
-				       )
+void Chromosomen::CreateNewSymChromosom ( Chromosom &dest, int m, int w,
+					                      SortListe<int> &CrossPoints )
 {
   // i          : Indize des Crosspoints
   // von, bis   : Zu Uebertragender Chromosomenabschnitt [von..bis[
@@ -838,13 +800,11 @@ int Chromosomen::CreateNewSymChromosom ( Chromosom &dest, int m, int w,
 
   // ...sonst Fehler !!!
   assert( dest.laenge() > 0 );
-
-  return 1;
 }
 
-int Chromosomen::CrossingOver (int m, int w)
+void Chromosomen::CrossingOver (int m, int w)
 {
-  if ( CrossVal == 0 ) return 1;
+  if ( CrossVal == 0 ) { return; }
 
   int shortest=( ( THIS[m].laenge() < THIS[w].laenge() ) ? m : w);
 
@@ -901,10 +861,9 @@ int Chromosomen::CrossingOver (int m, int w)
     fuegeEin ( Neu, laenge() );
 
   }
-  return 1;
 }
 
-int Chromosomen::Mutation (void)
+void Chromosomen::Mutation (void)
 {
   static long NukleotidsToPass=0;
   int ChromosomLen, NukleotidsPassedInChromosom, MutationFlag;
@@ -955,11 +914,10 @@ int Chromosomen::Mutation (void)
       }
     }
   }
-  return 1;                                
 }
 
 
-int Chromosomen::InversionsMutation (void)
+void Chromosomen::InversionsMutation (void)
 {
   static long ChromosomenToPass=InversionFreq;
   int ChromosomenPassed;
@@ -985,10 +943,9 @@ int Chromosomen::InversionsMutation (void)
 	InversionFreq - laenge() + ChromosomenPassed ;
     }
   }
-  return 1;
 }
 
-int Chromosomen::TranslocationsMutation (void)
+void Chromosomen::TranslocationsMutation (void)
 {
   static long ChromosomenToPass=TranslocationFreq;
   int ChromosomenPassed;
@@ -1014,7 +971,6 @@ int Chromosomen::TranslocationsMutation (void)
 	TranslocationFreq - laenge() + ChromosomenPassed ;
     }
   }
-  return 1;
 }
 
 int Chromosomen::CalcWholeFitness (void)
@@ -1033,7 +989,7 @@ int Chromosomen::CalcWholeFitness (void)
     ChromLenSum+=ChromLen;
     if(ChromosomenLenMin>ChromLen) ChromosomenLenMin=ChromLen;
     if(ChromosomenLenMax<ChromLen) ChromosomenLenMax=ChromLen;
-    if ((TempFitness = THIS[i].GetFitness())>2*MASCHINE::epsilon)
+    if ((TempFitness = THIS[i].GetFitness())>2*std::numeric_limits<double>::epsilon())
       ChromBetterZeroNumber++ ;
     Total          += TempFitness ;
     if (BestFitness < TempFitness) {
@@ -1192,7 +1148,7 @@ void Chromosomen::Protokoll (void)
   }
 }
 
-int Chromosomen::Echo (void) const
+bool Chromosomen::Echo (void) const
 {
     if (Generation == 1) {
         printf(" Generation: BestGeneration: AverageFitness: BestFitness:"
@@ -1212,39 +1168,44 @@ int Chromosomen::Echo (void) const
         printf ("\n\nGenerationen / Evolutionsdauer        : %3d  /  %3ld s\n",
                 Generation, EvolutionEnd-EvolutionStart);
     }
-    return 1;
+    return true;
 }
 
-void Chromosom::Ausgabe (std::ostream& OS)
+void Chromosom::Ausgabe (std::ostream& OS) const
 {
-  const int Zeilenlaenge = 10;
+    const int Zeilenlaenge = 10;
 
-  OS << "( " << laenge() << " ) < ";
-  for (int i=0; i<laenge(); i++) {
-    if (i % Zeilenlaenge == 0 &&  i)   OS << "\n\t";
-
-    double wandler = (*this)[i];
-    OS << wandler;
-    if (i % Zeilenlaenge != Zeilenlaenge-1 && i != laenge()-1)
-	OS << ", ";
-  }
-  OS << " >";
+    OS << "( l " << laenge() << ", f "
+       << ( ( GetFitness() < std::numeric_limits<double>::epsilon() ) ? (double)(0) : GetFitness() )
+       << " ) < ";
+    for (int i=0; i<laenge(); i++) {
+        if (i % Zeilenlaenge == 0 &&  i) {
+            OS << "\n\t";
+        }
+        double wandler = (*this)[i];
+        OS << wandler;
+        if (i % Zeilenlaenge != Zeilenlaenge-1 && i != laenge()-1) {
+            OS << ", ";
+        }
+    }
+    OS << " >";
 }
 
-void Chromosomen::Ausgabe (std::ostream& OS)
+void Chromosomen::Ausgabe (std::ostream& OS) const
 {
-  const int Zeilenlaenge = 7;
+    const int Zeilenlaenge = 7;
 
-  OS << "( " << laenge() << " ) < ";
-  for (int i=0; i<laenge(); i++) {
-    if (i % Zeilenlaenge == 0 &&  i)   OS << "\n\t";
-
-    OS << (((*this)[i].GetFitness()< MASCHINE::epsilon) ?
-	(double)(0) : (*this)[i].GetFitness());
-    if (i % Zeilenlaenge != Zeilenlaenge-1 && i != laenge()-1)
-	OS << ", ";
-  }
-  OS << " >";
+    OS << "( " << laenge() << " ) < ";
+    for (int i=0; i<laenge(); i++) {
+        if (i % Zeilenlaenge == 0 &&  i) {
+            OS << "\n\t";
+        }
+        OS << ( (*this)[i].GetFitness() < std::numeric_limits<double>::epsilon() ) ? (double)(0) : (*this)[i].GetFitness();
+        if (i % Zeilenlaenge != Zeilenlaenge-1 && i != laenge()-1) {
+            OS << ", ";
+        }
+    }
+    OS << " >";
 }
 
 /*

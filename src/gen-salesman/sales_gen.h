@@ -15,11 +15,10 @@
   #define SALES_GEN_H
 
   #include <string>
+  #include <limits>
 
   #include "gentech.h"
   #include "sales.h"
-
-  #include "maschine.h"
 
   class SalesChromosomen ;
 
@@ -104,21 +103,21 @@
     // Wegstrecke darstellt
     void Kill (int i)
     {
-      if ((*this)[i].GetFitness() < MASCHINE::epsilon) {
+      if ((*this)[i].GetFitness() < std::numeric_limits<double>::epsilon()) {
           Flag |= 1;	// Chromosom mit WorstDistance wird geloescht
       }
       loesche (i);
     }
 
-    virtual int CrossingOver (int m, int w);
+    virtual void CrossingOver (int m, int w);
 
-  int Mutation (void);
-  int NoImproving;
-  int NoImprovingCrossingOvers;
+    void Mutation (void);
 
-    virtual int CreateNewSymChromosom ( Chromosom &dest, int m, int w,
-				        SortListe<int> &CrossPoints
-			              ) ;
+    int NoImproving;
+    int NoImprovingCrossingOvers;
+
+    virtual void CreateNewSymChromosom ( Chromosom &dest, int m, int w,
+				                         SortListe<int> &CrossPoints ) ;
     // Zeigt im 0-ten Bit, ob sich WorstDistance veraendert hat.
     // Dann muss die Fitness der gesammten Population neu berechnet
     // werden

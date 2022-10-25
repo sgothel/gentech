@@ -25,7 +25,7 @@
   // THIS Makro, um leichter zu dereferenzieren.
   # define THIS (*this)
 
-  typedef unsigned char NukleoTyp; // muss ein ATOM'arer Typ sein ....
+  typedef uint8_t NukleoTyp; // muss ein ATOM'arer Typ sein ....
   
 
   // Ein Nukleotid soll mittels Integer dargestellt werden.
@@ -125,76 +125,73 @@
 
   class Chromosomen;     // Vorrausdeklaration einer friend class
 
-
-
   class Chromosom : public virtual Liste<NukleoTyp> {
+      friend std::ostream& operator << (std::ostream& OS, Liste<NukleoTyp>&);
 
-  friend std::ostream& operator << (std::ostream& OS, Liste<NukleoTyp>&);
+      public:
+          // Der Copykonstruktor ...
+          Chromosom (const Chromosom& a )
+          : Liste<NukleoTyp>(a), env(a.env) { Copy (a); }
 
-  public:
-    // Der Copykonstruktor ...
-    Chromosom (const Chromosom& a ) 
-    : Liste<NukleoTyp>(a), env(a.env) { Copy (a); }
+          // Der Konstruktor fuer die Konstruktion eines Chromosomes
+          Chromosom ( Chromosomen & env, int StartChromosomLength=0 ) ;
 
-    // Der Konstruktor fuer die Konstruktion eines Chromosomes
-    Chromosom ( Chromosomen & env, int StartChromosomLength=0 ) ;
+          // Der Konstruktor zum einlesen eines gespeicherten Chromosomes !
+          // Die Fitness wird hier nicht berechnet !!!
+          Chromosom ( Chromosomen & env, const std::string& FileName ) ;
 
-    // Der Konstruktor zum einlesen eines gespeicherten Chromosomes !
-    // Die Fitness wird hier nicht berechnet !!!
-    Chromosom ( Chromosomen & env, const std::string& FileName ) ;
+          // Der Destruktor ...
+          virtual ~Chromosom (void) {}
 
-    // Der Destruktor ...
-    virtual ~Chromosom (void) {}
+          // Der Zuweisungsoperator
+          Chromosom& operator=(const Chromosom& );
 
-    // Der Zuweisungsoperator
-    Chromosom& operator=(const Chromosom& );
+          // Der Vergleichsoperator
+          bool operator==(const Chromosom&) const;
 
-    // Der Vergleichsoperator
-    int operator==(const Chromosom&) const;
+          // Die Funktion zum speichern eines Chromosomes !
+          void Save ( const std::string& FileName ) const;
 
-    // Die Funktion zum speichern eines Chromosomes !
-    int Save ( const std::string& FileName ) const;
+          // Berechnet aus der UserNukleotidValue, 'i' ist hier der Index dafuer,
+          // die Nukleotid-Nummer fuer die Chromosomen-Schicht.
+          int GetNukleotidNumber (int i) const;
 
-    // Berechnet aus der UserNukleotidValue, 'i' ist hier der Index dafuer,
-    // die Nukleotid-Nummer fuer die Chromosomen-Schicht.
-    int GetNukleotidNumber (int i) const;
+          // Berechnet aus der Nukleotid-Nummer, 'i' ist hier der Index dafuer,
+          // fuer die Chromosomen-Schicht die UserNukleotidValue.
+          NukleoTyp GetUserNukleotidValue (int i) const;
 
-    // Berechnet aus der Nukleotid-Nummer, 'i' ist hier der Index dafuer,
-    // fuer die Chromosomen-Schicht die UserNukleotidValue.
-    NukleoTyp GetUserNukleotidValue (int i) const;
+          // Such im Chromosm innerhalb [von..bis] nach ein Intron und liefere
+          // die Intronposition [von..bis] zurueck.
+          bool FindIntron (int &von, int &bis) const;
 
-    // Such im Chromosm innerhalb [von..bis] nach ein Intron und liefere
-    // die Intronposition [von..bis] zurueck.
-    int FindIntron (int &von, int &bis) const;
+          // Aus dem Chromosom werden die Introns herausgefiltert.
+          // RETURN : Anzahl der herausgefilterten Nukleotide.
+          virtual int Splicing (void) ;
 
-    // Aus dem Chromosom werden die Introns herausgefiltert.
-    // RETURN : Anzahl der herausgefilterten Nukleotide.
-    virtual int Splicing (void) ;
+          // Ein Intron wird eingesetzt gemaess des SpliceCodes.
+          // Der Rumpf eines Introns besteht zur Zeit aus Zufaellig gewaehlte
+          // Zahlen !!! Die Laenge muss >= der Laenge der Spleiss-Sequenz haben.
+          virtual void InsertIntrons ( int von, int length );
 
-    // Ein Intron wird eingesetzt gemaess des SpliceCodes.
-    // Der Rumpf eines Introns besteht zur Zeit aus Zufaellig gewaehlte
-    // Zahlen !!! Die Laenge muss >= der Laenge der Spleiss-Sequenz haben.
-    virtual int InsertIntrons ( int von, int length );
+          // Ein zufaellig gewaehltes Exon, bzw. Genabschnitt wird umgekehrt.
+          virtual void Inversion (void) ;
 
-    // Ein zufaellig gewaehltes Exon, bzw. Genabschnitt wird umgekehrt.
-    virtual int Inversion (void) ;
+          // Ein zufaellig gewaehltes Exon, bzw. Genabschnitt wird umpositioniert.
+          virtual void Translocation (void) ;
 
-    // Ein zufaellig gewaehltes Exon, bzw. Genabschnitt wird umpositioniert.
-    virtual int Translocation (void) ;
+          void SetFitness (double Fitness) { Chromosom::Fitness=Fitness; }
 
-    void SetFitness (double Fitness) { Chromosom::Fitness=Fitness; }
+          double GetFitness (void) const { return Fitness; }
 
-    double GetFitness (void) const { return Fitness; }
+          // Ausgabe-Funktion
+          virtual void Ausgabe (std::ostream&) const;
 
-    // Ausgabe-Funktion
-    virtual void Ausgabe (std::ostream&);
+          Chromosomen & env;
+          double Fitness;
 
-    Chromosomen & env;
-    double Fitness;
-
-  private:
-
-    void Copy ( const Chromosom& ) ;
+      private:
+          void Copy ( const Chromosom& ) ;
+          void Load(const std::string& FileName);
   };
 
   // Waehrend der Reifeteilung, Meiose, geschehen folgende Dinge :
@@ -243,230 +240,226 @@
   //     etc........
 
   class Chromosomen : protected virtual Liste<Chromosom> {
+      friend class Chromosom;
 
-  friend class Chromosom;
+      public:
+          // Dieser Konstruktor liest die StartChromosomen aus einem File.
+          // Die Fitness der einzelnen Chromosomen, und AverageFitness, etc...
+          // kann hier noch nicht definiert werden (compiler ?!) !!!
+          Chromosomen (NukleoTyp UserNukleoMinVal, NukleoTyp UserNukleoMaxVal,
+                  int MaxChromosomen,
+                  const std::string& StartGenFile,
+                  int Nukleotide=4,
+                  SpliceCodeInfo *PtrSpliceCodeInfo=0,
+                  long InversionFreq=0,
+                  long TranslocationFreq=0,
+                  long AsymXOverFreq=0,
+                  int CrossVal=1,
+                  long MutationFreq=10000 // [1]
+          );
 
-  public:
+          // Dieser Konstruktor konstruiert die StartChromosomen
+          // zufaellig.
+          // Die Fitness der einzelnen Chromosomen, und AverageFitness, etc...
+          // kann hier noch nicht definiert werden (compiler ?!) !!!
+          Chromosomen (NukleoTyp UserNukleoMinVal, NukleoTyp UserNukleoMaxVal,
+                  int MaxChromosomen,
+                  int StartChromosomNumber,
+                  int StartChromosomLength,
+                  int Nukleotide=4,
+                  SpliceCodeInfo *PtrSpliceCodeInfo=0,
+                  long InversionFreq=0,
+                  long TranslocationFreq=0,
+                  long AsymXOverFreq=0,
+                  int CrossVal=1,
+                  long MutationFreq=10000 // [1]
+          ) ;
 
-    // Dieser Konstruktor liest die StartChromosomen aus einem File.
-    // Die Fitness der einzelnen Chromosomen, und AverageFitness, etc...
-    // kann hier noch nicht definiert werden (compiler ?!) !!!
-    Chromosomen (NukleoTyp UserNukleoMinVal, NukleoTyp UserNukleoMaxVal,
-		  int MaxChromosomen,
-		  const std::string& StartGenFile,
-		  int Nukleotide=4,
-		  SpliceCodeInfo *PtrSpliceCodeInfo=0,
-		  long InversionFreq=0,
-		  long TranslocationFreq=0,
-		  long AsymXOverFreq=0,
-		  int CrossVal=1,
-		  long MutationFreq=10000 // [1]
-		 );
+          // Der Destruktor ...
+          virtual ~Chromosomen ( void ) {} ;
 
-    // Dieser Konstruktor konstruiert die StartChromosomen
-    // zufaellig.
-    // Die Fitness der einzelnen Chromosomen, und AverageFitness, etc...
-    // kann hier noch nicht definiert werden (compiler ?!) !!!
-    Chromosomen (NukleoTyp UserNukleoMinVal, NukleoTyp UserNukleoMaxVal,
-		  int MaxChromosomen,
-		  int StartChromosomNumber,
-		  int StartChromosomLength,
-		  int Nukleotide=4,
-		  SpliceCodeInfo *PtrSpliceCodeInfo=0,
-		  long InversionFreq=0,
-		  long TranslocationFreq=0,
-		  long AsymXOverFreq=0,
-		  int CrossVal=1,
-		  long MutationFreq=10000 // [1]
-		) ;
+          // Die Chromosomen abspeichern..
+          void Save ( const std::string& fname ) const;
 
-    // Der Destruktor ...
-    virtual ~Chromosomen ( void ) {} ;
+          // Ein vom Benutzer evt. zu selbst definierendes Echo....
+          // Dies wird nach jeder neu generierten Population aufgerufen.
+          // Der Benutzer kann sich somit gewuenschte Informationen holen,
+          // wie sich auch vor allem von einem 'nichtabsturz'
+          // des Rechners ueberzeugen und den Optimierablauf unterbrechen.
+          // Ist der Rueckgabewert 1, so wird fortgefahren.
+          // Ist der Rueckgabewert 0, so wird abgebrochen.
+          // Die hier implementierte Funktion gibt auf 'stdout' die
+          // Generationsnummer, die best Fitness und die average Fitness aus.
+          // Dabei wird die ESC Taste abgefragt, falls abgebrochen werden soll
+          // und falls __MSDOS__ oder __BORLANDC__ definiert wurden.
+          virtual bool Echo ( void ) const;
 
-    // Die Chromosomen abspeichern..
-    int Save ( const std::string& fname ) const;
+          // Evolution ...
+          // DARF NICHT VON EINEM KONSTRUKTOR AUFGERUFEN WERDEN !!!!
+          // ... mit Gesamtfitness-Berechnung & Mutationen
+          // GoalFitness              : ZielFitness ...
+          // BirthRate                : Die Geburtenrate fuer die MixedGeneration
+          //                            Ist BirthRate==1.0, so besteht die Nachwelt
+          //                            nur aus Nachkommen.
+          //                            BirthRate ca. 0.6 => 60 % ist ok.
+          // NoImprovingCrossingOvers : Die Anzahl der Generationen,
+          //                            bei denen keine durchschnittliche
+          //                            Verbesserung der Nachkommen eintrat,
+          //                            als Abbruchbedingung !
+          // chrptrPtkFile            : Das Protokollfile ...
+          // return                   : Die Nummer der EndGeneration !!!
+          virtual int Evolution (
+                  double GoalFitness, const std::string& chrptrPtkFile,
+                  double BirthRate=0.6, int Bigamie=0,
+                  int NoImprovingCrossingOvers = 100
+          );
 
-    // Ein vom Benutzer evt. zu selbst definierendes Echo....
-    // Dies wird nach jeder neu generierten Population aufgerufen.
-    // Der Benutzer kann sich somit gewuenschte Informationen holen,
-    // wie sich auch vor allem von einem 'nichtabsturz'
-    // des Rechners ueberzeugen und den Optimierablauf unterbrechen.
-    // Ist der Rueckgabewert 1, so wird fortgefahren.
-    // Ist der Rueckgabewert 0, so wird abgebrochen.
-    // Die hier implementierte Funktion gibt auf 'stdout' die
-    // Generationsnummer, die best Fitness und die average Fitness aus.
-    // Dabei wird die ESC Taste abgefragt, falls abgebrochen werden soll
-    // und falls __MSDOS__ oder __BORLANDC__ definiert wurden.
-    virtual int Echo ( void ) const;
+          // Die Mittlere-Fitness der Generation einholen ....
+          double GetAverageFitness (void) const { return AverageFitness; }
 
-    // Evolution ...
-    // DARF NICHT VON EINEM KONSTRUKTOR AUFGERUFEN WERDEN !!!!
-    // ... mit Gesamtfitness-Berechnung & Mutationen
-    // GoalFitness              : ZielFitness ...
-    // BirthRate                : Die Geburtenrate fuer die MixedGeneration
-    //                            Ist BirthRate==1.0, so besteht die Nachwelt
-    //                            nur aus Nachkommen.
-    //                            BirthRate ca. 0.6 => 60 % ist ok.
-    // NoImprovingCrossingOvers : Die Anzahl der Generationen,
-    //                            bei denen keine durchschnittliche
-    //                            Verbesserung der Nachkommen eintrat,
-    //                            als Abbruchbedingung !
-    // chrptrPtkFile            : Das Protokollfile ...
-    // return                   : Die Nummer der EndGeneration !!!
-    virtual int Evolution (
-			    double GoalFitness, const std::string& chrptrPtkFile,
-			    double BirthRate=0.6, int Bigamie=0,
-			    int NoImprovingCrossingOvers = 100
-			  );
+          // Die Fitness-Summe der Generation einholen ....
+          double GetFitnessSum (void) const { return FitnessSum; }
 
-    // Die Mittlere-Fitness der Generation einholen ....
-    double GetAverageFitness (void) const { return AverageFitness; }
+          // das Indize des Chromosomes mit der schlechtesten Fitness einholen.
+          int GetWorstChromosom ( void ) const ;
 
-    // Die Fitness-Summe der Generation einholen ....
-    double GetFitnessSum (void) const { return FitnessSum; }
+          // die X-WorstFitness herausfinden.
+          // Uebergeben wird, die wievielte WorstFitness herausgefunden werden soll
+          // Zurueckgegeben wird der Wert der X-WorstFitness
+          double GetXWorstFitness (int) const ;
 
-    // das Indize des Chromosomes mit der schlechtesten Fitness einholen.
-    int GetWorstChromosom ( void ) const ;
+          // das Indize des Chromosomes mit der besten Fitness einholen.
+          int GetBestChromosom ( void ) const ;
 
-    // die X-WorstFitness herausfinden.
-    // Uebergeben wird, die wievielte WorstFitness herausgefunden werden soll
-    // Zurueckgegeben wird der Wert der X-WorstFitness
-    double GetXWorstFitness (int) const ;
+          // Die Generationsnummer einholen.
+          int GetGeneration ( void ) const { return Generation; }
 
-    // das Indize des Chromosomes mit der besten Fitness einholen.
-    int GetBestChromosom ( void ) const ;
+          double GetTheBestEversAverageFitness ( void ) const
+          { return TheBestEversAverageFitness; }
 
-    // Die Generationsnummer einholen.
-    int GetGeneration ( void ) const { return Generation; }
+          // das Beste Chromosom Ueberhaupt ... ge-splice't
+          const Chromosom &GetTheBestEverChromosom ( void );
 
-    double GetTheBestEversAverageFitness ( void ) const
-      { return TheBestEversAverageFitness; }
+          virtual void Ausgabe (std::ostream&) const;
 
-    // das Beste Chromosom Ueberhaupt ... ge-splice't
-    const Chromosom &GetTheBestEverChromosom ( void );
+          // Vom Benutzer zu Definieren :
+          // Fitness fuer das uebergebene Chromosom.
+          // Wert [0..1] !
+          virtual double Fitness (const Chromosom&) = 0 ;
 
-    virtual void Ausgabe (std::ostream&);
+          // Schnittstelle zu 'private' Elemente :
+          NukleoTyp GetUserNukleoMinVal(void) { return UserNukleoMinVal; }
+          NukleoTyp GetUserNukleoMaxVal(void) { return UserNukleoMaxVal; }
 
-    // Vom Benutzer zu Definieren :
-    // Fitness fuer das uebergebene Chromosom.
-    // Wert [0..1] !
-    virtual double Fitness (const Chromosom&) = 0 ;
+          int GetNukleotide(void) { return Nukleotide; }
 
-    // Schnittstelle zu 'private' Elemente :
-    NukleoTyp GetUserNukleoMinVal(void) { return UserNukleoMinVal; }
-    NukleoTyp GetUserNukleoMaxVal(void) { return UserNukleoMaxVal; }
+          SpliceCodeInfo *GetPtrSpliceCodeInfo(void) { return ptrSpliceCodeInfo; }
 
-    int GetNukleotide(void) { return Nukleotide; }
+      protected:
+          // Protokolliere
+          virtual void Protokoll ( void ) ;
 
-    SpliceCodeInfo *GetPtrSpliceCodeInfo(void) { return ptrSpliceCodeInfo; }
+          // Sucht ein Chromosom aus. Nach dem Rouletteprinzip [4] !
+          virtual int RouletteSelect ( void ) const;
 
-  protected:
+          // die Gesamtfitness ...
+          virtual int CalcWholeFitness ( void ) ;
 
-    // Protokolliere
-    virtual void Protokoll ( void ) ;
+          double GetBestFitness ( void ) const { return BestFitness; };
 
-    // Sucht ein Chromosom aus. Nach dem Rouletteprinzip [4] !
-    virtual int RouletteSelect ( void ) const;
+          // Erste Fitness-Initialisierung fuer Evolution,
+          // da der Konstruktor die virtuale Fitnessfunktion noch nicht kennt !
+          virtual void InitFitness(void) ;
 
-    // die Gesamtfitness ...
-    virtual int CalcWholeFitness ( void ) ;
+          // Erzeugt Nachkommen und gliedert sie am Ende d. Chromosomen-Liste ein
+          // incl. Fitnessberechnung, aber ohne Gesamtfitnessberechnung !!!
+          virtual void CrossingOver (int m, int w);
 
-    double GetBestFitness ( void ) const { return BestFitness; };
+          // die Mutationen ... [1] eines Nukleotids ...
+          virtual void Mutation (void);
 
-    // Erste Fitness-Initialisierung fuer Evolution,
-    // da der Konstruktor die virtuale Fitnessfunktion noch nicht kennt !
-    virtual void InitFitness(void) ;
+          // die Mutationen ... [2] eines Chromosomenabschnittes
+          virtual void InversionsMutation (void);
 
-    // Erzeugt Nachkommen und gliedert sie am Ende d. Chromosomen-Liste ein
-    // incl. Fitnessberechnung, aber ohne Gesamtfitnessberechnung !!!
-    virtual int CrossingOver (int m, int w);
+          // die Mutationen ... [6] eines Chromosomenabschnittes
+          virtual void TranslocationsMutation (void);
 
-    // die Mutationen ... [1] eines Nukleotids ...
-    virtual int Mutation (void);
+          // Die Neue Generation Besteht aus Kindern und fast guten Eltern ... [1]
+          // ... mit Gesamtfitness & Mutationen
+          virtual void NewGeneration (double BirthRate, int Bigamie) ;
 
-    // die Mutationen ... [2] eines Chromosomenabschnittes
-    virtual int InversionsMutation (void);
+          // Die Neue Generation Besteht nur aus Kindern .... [4]
+          // ... mit Gesamtfitness & Mutationen
+          virtual void NewGeneration (int Bigamie) ;
 
-    // die Mutationen ... [6] eines Chromosomenabschnittes
-    virtual int TranslocationsMutation (void);
+          // Der Funktion LetDie wird die Fitness uebergeben, ab der 'Chromosom'-en
+          // mit einer schlechteren Fitness ausselektiert werden.
+          virtual void LetDie (double cut);
 
-    // Die Neue Generation Besteht aus Kindern und fast guten Eltern ... [1]
-    // ... mit Gesamtfitness & Mutationen
-    virtual int NewGeneration (double BirthRate, int Bigamie) ;
-
-    // Die Neue Generation Besteht nur aus Kindern .... [4]
-    // ... mit Gesamtfitness & Mutationen
-    virtual int NewGeneration (int Bigamie) ;
-
-    // Der Funktion LetDie wird die Fitness uebergeben, ab der 'Chromosom'-en
-    // mit einer schlechteren Fitness ausselektiert werden.
-    virtual int LetDie (double cut);
-
-    // Diese Funktion existiert nur zum Ueberladen bei kuenftigen
-    // Nachfahren
-    virtual void Kill (int i)	{ loesche (i); }
+          // Diese Funktion existiert nur zum Ueberladen bei kuenftigen
+          // Nachfahren
+          virtual void Kill (int i)	{ loesche (i); }
 
 
-    // STATISTISCHE VARIABLEN FUER DAS PROTOKOLL !!!
-    int TheBestEversGeneration;
-    double AverageFitness;
-    double TheBestEversAverageFitness;
-    double BestFitness;
-    double FitnessSum;
-    int Generation;
-    int MaxChromosomen;
-    int IntroCodeLenSum;
-    int SplicedChromosoms;
+          // STATISTISCHE VARIABLEN FUER DAS PROTOKOLL !!!
+          int TheBestEversGeneration;
+          double AverageFitness;
+          double TheBestEversAverageFitness;
+          double BestFitness;
+          double FitnessSum;
+          int Generation;
+          int MaxChromosomen;
+          int IntroCodeLenSum;
+          int SplicedChromosoms;
 
-    Chromosom TheBestEver;
+          Chromosom TheBestEver;
 
-    FILE *fileptrPtk;
-    // Die Zeiten...
-    time_t EvolutionEnd;
-    time_t GenerationStart;
-    time_t EvolutionStart;
-    time_t GenerationEnd;
+          FILE *fileptrPtk;
+          // Die Zeiten...
+          time_t EvolutionEnd;
+          time_t GenerationStart;
+          time_t EvolutionStart;
+          time_t GenerationEnd;
 
-    // STATISTISCHE VARIABLEN FUER DAS PROTOKOLL !!!
-    int ChromosomenLenMin;
-    int ChromosomenLenMax;
-    double ChromosomenLenAvrg;
-    // Speichert Anzahl der Chromosomen, deren Fitness groesser Null ist
-    int ChromBetterZeroNumber;
+          // STATISTISCHE VARIABLEN FUER DAS PROTOKOLL !!!
+          int ChromosomenLenMin;
+          int ChromosomenLenMax;
+          double ChromosomenLenAvrg;
+          // Speichert Anzahl der Chromosomen, deren Fitness groesser Null ist
+          int ChromBetterZeroNumber;
 
 
 
-    // STATISTISCHE VARIABLEN FUER DAS PROTOKOLL !!!
-    int MutationsThisGeneration;
-    int InversionsThisGeneration;
-    int TranslocationsThisGeneration;
-    long MutationFreq;
-    static const long MutationFreqVar;
+          // STATISTISCHE VARIABLEN FUER DAS PROTOKOLL !!!
+          int MutationsThisGeneration;
+          int InversionsThisGeneration;
+          int TranslocationsThisGeneration;
+          long MutationFreq;
+          static const long MutationFreqVar;
 
-    // mittels der 'CrossPoints' in 'dest' EINE Kreuzung aus 'm' & 'w'
-    // erzeugen !!!
-    // Fuer das 2.Kind muss die Routine mit vertauschten Geschlechtern
-    // aufgerufen werden.
-    // 'm'      : Indize des maennlichen Chromosoms
-    // 'w'      : Indize des weiblichen Chromosoms
-    virtual int CreateNewSymChromosom ( Chromosom &dest, int m, int w,
-				        SortListe<int> &CrossPoints
-			              ) ;
+          // mittels der 'CrossPoints' in 'dest' EINE Kreuzung aus 'm' & 'w'
+          // erzeugen !!!
+          // Fuer das 2.Kind muss die Routine mit vertauschten Geschlechtern
+          // aufgerufen werden.
+          // 'm'      : Indize des maennlichen Chromosoms
+          // 'w'      : Indize des weiblichen Chromosoms
+          virtual void CreateNewSymChromosom ( Chromosom &dest, int m, int w,
+                                               SortListe<int> &CrossPoints ) ;
 
-    // Berechnen einiger Parameter ....
-    void CalcParameter(void) ;
+          // Berechnen einiger Parameter ....
+          void CalcParameter(void) ;
 
-    long InversionFreq;
-    long TranslocationFreq;
-    long AsymXOverFreq;
-    int CrossVal;
-    long XOverNumber;
+          long InversionFreq;
+          long TranslocationFreq;
+          long AsymXOverFreq;
+          int CrossVal;
+          long XOverNumber;
 
-    SpliceCodeInfo *ptrSpliceCodeInfo;
-    NukleoTyp UserNukleoMinVal;
-    NukleoTyp UserNukleoMaxVal;
-    NukleoTyp UserNukleoValScale;
-    int Nukleotide;
+          SpliceCodeInfo *ptrSpliceCodeInfo;
+          NukleoTyp UserNukleoMinVal;
+          NukleoTyp UserNukleoMaxVal;
+          NukleoTyp UserNukleoValScale;
+          int Nukleotide;
   };
 
 

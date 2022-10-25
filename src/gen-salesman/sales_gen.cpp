@@ -187,9 +187,8 @@ int SalesChromosomen::Evolution (double GoalFitness, const std::string& chrptrPt
 }
 
 /* UNIQUE NUKLEOTIDS */
-int SalesChromosomen::CreateNewSymChromosom (Chromosom &dest, int m, int w,
-					SortListe<int> &CrossPoints
-				       )
+void SalesChromosomen::CreateNewSymChromosom (Chromosom &dest, int m, int w,
+					                          SortListe<int> &CrossPoints)
 // Programiert nach Pseudocode aus:
 // Eberhard Schoeneburg, Frank Heinzmann, Sven Feddersen:
 // Genetische Algorithmen und Evolutionsstrategien,
@@ -279,17 +278,15 @@ int SalesChromosomen::CreateNewSymChromosom (Chromosom &dest, int m, int w,
               dest.laenge() == THIS[w].laenge()
       );
   # endif
-  return 1;
 }
 
 /* UNIQUE NUKLEOTIDS */
-int SalesChromosomen::CrossingOver (int m, int w)
+void SalesChromosomen::CrossingOver (int m, int w)
 // Order Crossing Over
 //
 {
 
-  if (CrossVal == 0) return 1;
-
+  if (CrossVal == 0) { return; }
 
   // Symmetrisches XOver !!!
   SortListe<int> CrossPoints;
@@ -322,10 +319,9 @@ int SalesChromosomen::CrossingOver (int m, int w)
     IntroCodeLenSum+=SplicedCode;
   }
   THIS[laenge()-1].SetFitness(Fitness(NeuB));
-  return 1;
 }
 
-int SalesChromosomen::Mutation (void)
+void SalesChromosomen::Mutation (void)
 {
   static long NukleotidsToPass=0;
   int ChromosomLen, NukleotidsPassedInChromosom;
@@ -402,7 +398,6 @@ int SalesChromosomen::Mutation (void)
       }
     }
   }
-  return 1;
 }
 
 int SalesChromosomen::Echo()
@@ -425,14 +420,6 @@ int SalesChromosomen::Echo()
     printf ("\n\nGenerationen / Evolutionsdauer        : %3d  /  %3ld s\n",
             Generation, EvolutionEnd-EvolutionStart);
   }
-
-  # ifdef __BORLANDC__
-    while (kbhit()) {           // Solange Zeichen im Tastaturpuffer stehen
-      // ESC Taste ????
-      if(getch()==ESC) return 0;
-    }
-  # endif
-  fflush(0);
   return 1;
 }
 
@@ -452,7 +439,7 @@ int SalesChromosomen::CalcWholeFitness (void)
     ChromLenSum+=ChromLen;
     if(ChromosomenLenMin>ChromLen) ChromosomenLenMin=ChromLen;
     if(ChromosomenLenMax<ChromLen) ChromosomenLenMax=ChromLen;
-    if ((TempFitness = THIS[i].GetFitness())>2*MASCHINE::epsilon) {
+    if ((TempFitness = THIS[i].GetFitness())>2*std::numeric_limits<double>::epsilon()) {
         ChromBetterZeroNumber++ ;
     }
     Total          += TempFitness ;

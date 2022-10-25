@@ -12,7 +12,6 @@
 // Bielefeld, den 11.3.1994.
 
 #include "sales_genparin.h"
-#include "maschine.h"
 
 #include <string>
 #include <vector>

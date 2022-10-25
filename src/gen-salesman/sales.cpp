@@ -12,7 +12,6 @@
 // Bielefeld, den 11.3.1994.
 
 # include <math.h>
-# include "maschine.h"
 # include "sales.h"
 
 /* Es folgen die Zeilen der Abstandstabelle.             */
