@@ -125,11 +125,11 @@ int SalesChromosomen::Evolution (double GoalFitness, const std::string& chrptrPt
 
   InitFitness() ;
   if( !chrptrPtkFile.empty() ) {
-    if ((fileptrPtk=fopen (chrptrPtkFile.c_str(), "wt")) == NULL)
+    if ((fileptrPtk=fopen (chrptrPtkFile.c_str(), "wt")) == nullptr)
       INT_ERR (__LINE__);
-  } else fileptrPtk = NULL;
+  } else fileptrPtk = nullptr;
 
-  EvolutionStart=time(NULL);
+  EvolutionStart=time(nullptr);
   Generation=1;
   SplicedChromosoms=0;
   IntroCodeLenSum=0;
@@ -167,7 +167,7 @@ int SalesChromosomen::Evolution (double GoalFitness, const std::string& chrptrPt
     InversionsMutation();
     TranslocationsMutation();
 
-    GenerationEnd=time(NULL);
+    GenerationEnd=time(nullptr);
 
     if (Flag & 2) { NoImproving=0; Flag&=~2; } 
     else NoImproving++ ;
@@ -175,11 +175,11 @@ int SalesChromosomen::Evolution (double GoalFitness, const std::string& chrptrPt
     if(!Echo()) stop=1;
   }
 
-  EvolutionEnd=time(NULL);
+  EvolutionEnd=time(nullptr);
   Echo();
   Protokoll();
 
-  if (fileptrPtk != NULL) fclose (fileptrPtk);
+  if (fileptrPtk != nullptr) fclose (fileptrPtk);
 
   TheGame.Play (TheBestEver, true);
 
@@ -486,7 +486,7 @@ void SalesChromosomen::Protokoll()
 		       : 0.0
 		     ;
 
-  if (fileptrPtk != NULL) {
+  if (fileptrPtk != nullptr) {
     if (EvolutionEnd == 0) {
        fprintf (fileptrPtk, "=======================================================\n\n\n");
 	 fprintf (fileptrPtk, "\nGeneration / Generierungsdauer        : %3d  /  %ld s\n",

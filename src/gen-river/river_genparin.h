@@ -29,7 +29,7 @@
   class GenParameter {
   public:
       void Input( int NukleoMinVal, int NukleoMaxVal,
-		  NukleoTyp *ptrSpliceCode=NULL );
+		  NukleoTyp *ptrSpliceCode=nullptr );
       std::string FileName;
       std::string FileNameHeader;
       SpliceCodeInfo TheSpliceCodeInfo;
