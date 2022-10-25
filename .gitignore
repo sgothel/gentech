@@ -1,0 +1,23 @@
+/bin/
+/obj/
+/Debug/
+/build/
+
+# Object files
+*.o
+*.so
+*.so.*
+*.lo
+*.la
+*.pyc
+*.class
+
+# Temp files
+*.swp
+*.swo
+*~
+*.log
+
+src/gen-river/data/*
+src/gen-salesman/data/*
+jau/*

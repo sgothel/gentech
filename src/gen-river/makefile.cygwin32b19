@@ -1,0 +1,33 @@
+
+CC		= g++ -c
+LN              = g++
+GENTECHLIB	= ../gentech.lib
+JAULIBS		= ../../jaulibs
+
+CCOPTS		= -g -I. -I$(JAULIBS) -I$(GENTECHLIB) -D__LINUX__
+
+.SUFFIXES	: .cc .obj
+
+#		*Implicit Rules*
+.cc.obj:
+	$(CC) -o ${<:.cc=.obj} $(CCOPTS) $<
+
+#		*List Macros*
+
+
+OBJS =  \
+ main.obj \
+ genparin.obj \
+ river.obj \
+ rivergen.obj \
+ $(GENTECHLIB)/gentech.obj \
+ $(JAULIBS)/maschine.obj \
+ $(JAULIBS)/interror.obj
+
+#		*Explicit Rules*
+#		*Explicit Rules*
+rivergen.exe: $(OBJS)
+	$(LN) -o $@ $(OBJS) -lm -lstdc++
+
+clean:
+	rm -f $(OBJS)
