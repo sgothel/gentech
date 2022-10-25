@@ -29,7 +29,12 @@
 /*************************************************************************/
 
 #include "strclass.h"
+
 #include <climits>
+#include <cstdio>
+#include <cstring>
+
+#include "interror.h"
 
 std::ostream& operator<< (std::ostream& OS, StrClass& str)
 {
@@ -41,45 +46,45 @@ std::ostream& operator<< (std::ostream& OS, StrClass& str)
     return OS;
 }
 
-void StrClass::copy(const char *m)
+void StrClass::copy(const char *o)
 {
-    if(m!=nullptr)
+    if(o!=nullptr)
     {
       // FIXME: consider using strnlen(..) using maxlen!
       {
-          const size_t _length = strlen(m);
+          const size_t _length = strlen(o);
           if( _length > INT_MAX ) {
               INT_ERR(__LINE__);
           }
           m_length = (int) _length;
       }
-      if ( ( StrPtr=new char[length+1] ) == nullptr )
+      if ( ( StrPtr=new char[m_length+1] ) == nullptr )
       {
           fprintf(stderr,"Insufficient memory\n");
           INT_ERR(__LINE__);
       }
-      strncpy(StrPtr, m, length+1);
-      // StrPtr[length] = 0; // explicit EOS in case using strnlen(..) using maxlen
+      strncpy(StrPtr, o, m_length+1);
+      // StrPtr[m_length] = 0; // explicit EOS in case using strnlen(..) using maxlen
     } else {
       StrPtr=nullptr;
       m_length=0;
     }
 }
 
-void StrClass::copy(const StrClass &m)
+void StrClass::copy(const StrClass &o)
 {
-    if( 0 < m.length() )
+    if( 0 < o.length() )
     {
-      length = m.length();
-      if ( ( StrPtr=new char[length+1] ) == nullptr )
+      m_length = o.length();
+      if ( ( StrPtr=new char[m_length+1] ) == nullptr )
       {
         fprintf(stderr,"Insufficient memory\n");
         INT_ERR(__LINE__);
       }
-      strncpy(StrPtr, m, length+1);
+      strncpy(StrPtr, o, m_length+1);
     } else {
       StrPtr=nullptr;
-      length=0;
+      m_length=0;
     }
 }
 
@@ -90,13 +95,13 @@ void StrClass::dest()
       delete[] StrPtr;
       StrPtr=nullptr;
     }
-    length = 0;
+    m_length = 0;
 }
 
-void StrClass::strcat(const StrClass &m)
+void StrClass::strcat(const StrClass &o)
 {                  
      char *buffer;
-     const int bufferLen = length() + m.length() + 1;
+     const int bufferLen = length() + o.length() + 1;
      if( 1 == bufferLen ) {
        return;
      }
@@ -109,109 +114,109 @@ void StrClass::strcat(const StrClass &m)
        buffer[0]=0;  
      }
 
-     if( 0 < m.length() ) {
-         strncpy(buffer+length(), m.StrPtr, m.length()+1);
+     if( 0 < o.length() ) {
+         strncpy(buffer+length(), o.StrPtr, o.length()+1);
      }
 
      if( nullptr != StrPtr ) {
          delete[] StrPtr;
      }
      StrPtr=buffer;
-     length=bufferLen;
+     m_length=bufferLen;
 }
 
-StrClass& StrClass::operator=(const StrClass &m)
+StrClass& StrClass::operator=(const StrClass &o)
 {
-    if(this != &m)
+    if(this != &o)
     {
        if( nullptr != StrPtr ) {
          delete[] StrPtr;
        }
-       copy(m);
+       copy(o);
     }
     return *this;
 }
 
-StrClass& StrClass::operator=(const char *StrPtr)
+StrClass& StrClass::operator=(const char *o)
 {
-    if(this->StrPtr != StrPtr)
+    if(this->StrPtr != o)
     {
-      if( nullptr != StrPtr ) {
-        delete[] StrPtr;
+      if( nullptr != o ) {
+        delete[] o;
       }
-      copy(StrPtr);
+      copy(o);
     }
     return *this;
 }
 
-int StrClass::operator==(const StrClass &m) const
+int StrClass::operator==(const StrClass &o) const
 {
-    if(this == &m || this->StrPtr == m.StrPtr ) {
+    if(this == &o || this->StrPtr == o.StrPtr ) {
       return 1;
     }
     if ( 0 == length() )
     {
-      return 0 == m.length();
+      return 0 == o.length();
     } 
-    if ( 0 == m.length() ) {
+    if ( 0 == o.length() ) {
       return 0;
     }
-    if ( strcmp(StrPtr, m.StrPtr) == 0 ) {
+    if ( strcmp(StrPtr, o.StrPtr) == 0 ) {
       return 1;
     }
     return 0;
 }
 
-int StrClass::operator>=(const StrClass &m) const
+int StrClass::operator>=(const StrClass &o) const
 {
     if ( 0 == length() )
     {
-      return 0 == m.length();
+      return 0 == o.length();
     }
 
-    if ( 0 == m.length() ) {
+    if ( 0 == o.length() ) {
       return 1;
     }
 
-    int b=strcmp(StrPtr, m.StrPtr);
+    int b=strcmp(StrPtr, o.StrPtr);
     if ( b == 0 || b>0 ) {
       return 1;
     }
     return 0;
 }
 
-int StrClass::operator<=(const StrClass &m) const
+int StrClass::operator<=(const StrClass &o) const
 {
     if ( 0 == length() ) return 1;
 
-    if ( 0 == m.length() ) return 0;
+    if ( 0 == o.length() ) return 0;
 
-    int b=strcmp(StrPtr, m.StrPtr);
+    int b=strcmp(StrPtr, o.StrPtr);
     if ( b == 0 || b<0 ) {
       return 1;
     }
     return 0;
 }
 
-int StrClass::operator>(const StrClass &m) const
+int StrClass::operator>(const StrClass &o) const
 {
     if ( 0 == length() ) return 0;
 
-    if ( 0 == m.length() ) return 1;
+    if ( 0 == o.length() ) return 1;
 
-    if ( strcmp(StrPtr, m.StrPtr) > 0 ) {
+    if ( strcmp(StrPtr, o.StrPtr) > 0 ) {
       return 1;
     }
     return 0;
 }
 
-int StrClass::operator<(const StrClass &m) const
+int StrClass::operator<(const StrClass &o) const
 {
     if ( 0 == length() ) return 1;
 
-    if ( 0 == m.length() ) return 0;
+    if ( 0 == o.length() ) return 0;
 
-    if ( strcmp(StrPtr, m.StrPtr) < 0 ) {
+    if ( strcmp(StrPtr, o.StrPtr) < 0 ) {
       return 1;
     }
     return 0;
@@ -248,15 +253,15 @@ int StrClass::delSubStr(const StrClass &SubStr, int StartIndex)
     if( 0 <= i ) {
 	const int l = length();
 	const int l2 = SubStr.length();
-      length=l-l2;
-      char *newstr = new char[length+1];
+      m_length=l-l2;
+      char *newstr = new char[m_length+1];
       if( !newstr ) {
         INT_ERR(__LINE__);
       }
       if( 0 < i ) {
         strncpy(newstr, StrPtr, i); // w/o EOS
       }
-      strncpy(newstr+i, StrPtr+i+l2, length+1-i);
+      strncpy(newstr+i, StrPtr+i+l2, m_length+1-i);
       delete[] StrPtr;
       StrPtr=newstr;
     }
@@ -271,8 +276,8 @@ bool StrClass::insertSubStr(const StrClass &SubStr, int Index)
 	if( l < Index ) return false;
       if( 0 == l2 ) return true;
 	
-      length = l+l2;
-	char *newstr=new char[length+1];
+      m_length = l+l2;
+	char *newstr=new char[m_length+1];
 	if(!newstr) {
         INT_ERR(__LINE__);
       }
@@ -281,9 +286,9 @@ bool StrClass::insertSubStr(const StrClass &SubStr, int Index)
       }
 	
 	newstr[Index]=0;
-	strcat(newstr, SubStr.StrPtr);
+	::strcat(newstr, SubStr.StrPtr);
 	
-	if(Index<l)	strcat(newstr, &(StrPtr[Index]));
+	if(Index<l)	::strcat(newstr, &(StrPtr[Index]));
 	
 	delete[] StrPtr;
 	StrPtr=newstr;

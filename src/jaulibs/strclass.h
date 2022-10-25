@@ -31,9 +31,6 @@
   # define _STRCLASS_H
 
   # include <iostream>
-  # include <cstdio>
-  # include <cstring>
-  # include "interror.h"
 
   class StrClass {
 
@@ -60,8 +57,8 @@
      // operator char *(void) { return StrPtr; }
      char & operator[](int i) { return StrPtr[i]; }
      char operator[](int i) const { return StrPtr[i]; }
-     int length(void) const { return length; }
-     operator unsigned int() { return (unsigned int)length; }
+     int length(void) const { return m_length; }
+     operator unsigned int() { return (unsigned int)m_length; }
 
      // rather old, but still a member-function because of compatibility ... :
      char *getStrPtr(void) { return StrPtr; }

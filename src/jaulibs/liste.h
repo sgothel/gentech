@@ -378,8 +378,8 @@
       }
       else anfang();
       assert ( aktInd >= 0 );
-      assert ( ( laenge()==0 && aktInd==0 && aktZgr==NULL && start==NULL ) ||
-               ( laenge()>0 && aktZgr!=NULL && start!=NULL )
+      assert ( ( laenge()==0 && aktInd==0 && aktZgr==nullptr && start==nullptr ) ||
+               ( laenge()>0 && aktZgr!=nullptr && start!=nullptr )
              ) ;
       #ifdef __LISTE_PARANOIA__
         ParanoiaCheck();
@@ -449,12 +449,12 @@
         while ( pi )
         {
           i++;
-          if(pi->vorg!=NULL)
+          if(pi->vorg!=nullptr)
           {
             if(pi->vorg->nachf!=pi)
               INT_ERR(__LINE__);
           }
-          if(pi->nachf!=NULL)
+          if(pi->nachf!=nullptr)
           {
             if(pi->nachf->vorg!=pi)
               INT_ERR(__LINE__);

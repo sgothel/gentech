@@ -6,7 +6,7 @@
  *					  33615 Bielefeld
  *					  0521/139228
  *  Erstellungsdatum: 05.05.1994
- *  Žnderungsdatum  : 28.07.1994
+ *  ï¿½nderungsdatum  : 28.07.1994
  *
  *
  *  2019-12-17 Sven Gothel: Introduce reusable buffer passing etc
@@ -26,14 +26,11 @@
  */
 
 #ifndef _JAUIO_H
-  # define _JAUIO_H
+#define _JAUIO_H
 
-  # include <stdlib.h>
-  # include <stdio.h>
-  # include "interror.h"
-  # include "assert.h"
+#include <cstdlib>
 
-  char *GetFileInBuffer(const char *fName, const char *buffer, const size_t buffer_len, size_t *nbytes);
+char *GetFileInBuffer(const char *fName, char *buffer, const size_t buffer_len, size_t *nbytes);
 
 #endif
 

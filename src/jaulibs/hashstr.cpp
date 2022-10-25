@@ -33,18 +33,18 @@ void HashStrClassListe::Copy(const HashStrClassListe &m)
    Size=m.Size;
 
    int i;
-   assert(HashArray==NULL);
+   assert(HashArray==nullptr);
    assert(HEAP_CHECK()>=1);
 
    if(Size>0)
    {
-	 if( ( HashArray=new SortListe<StrClass>*[Size] ) == NULL )
+	 if( ( HashArray=new SortListe<StrClass>*[Size] ) == nullptr )
 	 {
 		fprintf(stderr, "<HashStrClassListe> ERROR : Es wurde versucht ein HashArray\n");
 		fprintf(stderr, "<HashStrClassListe> mit der Groesse %d zu eroeffnen.\n", Size);
 		INT_ERR(__LINE__);
 	 }
-	 if( ( AnzahlElemente=new int[Size] ) == NULL )
+	 if( ( AnzahlElemente=new int[Size] ) == nullptr )
 	 {
 		fprintf(stderr, "<HashStrClassListe> ERROR : Es wurde versucht ein int-Array\n");
 		fprintf(stderr, "<HashStrClassListe> fuer internen Gebrauch mit der Groesse %d zu eroeffnen.\n", Size);
@@ -54,11 +54,11 @@ void HashStrClassListe::Copy(const HashStrClassListe &m)
 	 // Initialisierung .. Copy
 	 for( i=0; i<Size; i++ )
 	 {
-	   if(m.HashArray[i]!=NULL)
+	   if(m.HashArray[i]!=nullptr)
 	   {
 		 HashArray[i]=new SortListe<StrClass>(*m.HashArray[i]);
-		 if(HashArray[i]==NULL) INT_ERR(__LINE__);
-	   } else HashArray[i]=NULL;
+		 if(HashArray[i]==nullptr) INT_ERR(__LINE__);
+	   } else HashArray[i]=nullptr;
 	   AnzahlElemente[i]=m.AnzahlElemente[i];
 	 }
 	 assert(HEAP_CHECK()>=1);
@@ -75,34 +75,34 @@ void HashStrClassListe::Dest()
 	 for(int i=0; i<Size; i++ )
 	 {
 	   assert(HEAP_CHECK()>=1);
-	   if(HashArray[i]!=NULL)
+	   if(HashArray[i]!=nullptr)
 		 delete HashArray[i];
 	 }
 	 assert(HEAP_CHECK()>=1);
 	 delete[] HashArray;
-	 HashArray=NULL;
+	 HashArray=nullptr;
 	 delete[] AnzahlElemente;
-	 AnzahlElemente=NULL;
+	 AnzahlElemente=nullptr;
 	 assert(HEAP_CHECK()>=1);
    }
 }
 
 HashStrClassListe::HashStrClassListe( int size )
-: Size(size), anzahl(0), HashArray(NULL), AnzahlElemente(NULL)
+: HashArray(nullptr), AnzahlElemente(nullptr), Size(size), anzahl(0)
 {
-   assert(HashArray==NULL);
+   assert(HashArray==nullptr);
    assert(HEAP_CHECK()>=1);
    if(size>0)
    {
-	 if( ( HashArray= new SortListe<StrClass>*[Size] ) == NULL )
+	 if( ( HashArray= new SortListe<StrClass>*[Size] ) == nullptr )
 	 {
 		fprintf(stderr, "<HashStrClassListe> ERROR : Es wurde versucht ein HashArray\n");
 		fprintf(stderr, "<HashStrClassListe> mit der Groesse %d zu eroeffnen.\n", Size);
 		INT_ERR(__LINE__);
 	 }
-	 assert( HashArray!=NULL );
+	 assert( HashArray!=nullptr );
 	 assert(HEAP_CHECK()>=1);
-	 if( ( AnzahlElemente=new int[Size] ) == NULL )
+	 if( ( AnzahlElemente=new int[Size] ) == nullptr )
 	 {
 		fprintf(stderr, "<HashStrClassListe> ERROR : Es wurde versucht ein int-Array\n");
 		fprintf(stderr, "<HashStrClassListe> fuer internen Gebrauch mit der Groesse %d zu eroeffnen.\n", Size);
@@ -112,7 +112,7 @@ HashStrClassListe::HashStrClassListe( int size )
 	 // initialisierung
 	 for ( int i=0; i<Size; i++ )
 	 {
-	   HashArray[i]=NULL;
+	   HashArray[i]=nullptr;
 	   AnzahlElemente[i]=0;
 	 }
 	 assert(HEAP_CHECK()>=1);
@@ -120,7 +120,7 @@ HashStrClassListe::HashStrClassListe( int size )
 }
 
 HashStrClassListe::HashStrClassListe( const HashStrClassListe &m )
-: HashArray(NULL), AnzahlElemente(NULL), anzahl(0), Size(0)
+: HashArray(nullptr), AnzahlElemente(nullptr), Size(0), anzahl(0)
 { Copy(m); }
 
 HashStrClassListe& HashStrClassListe::operator=(const HashStrClassListe &m)
@@ -144,7 +144,7 @@ StrClass& HashStrClassListe::operator[](int i) const
 	  INT_ERR(__LINE__);
    }
    assert(HEAP_CHECK()>=1);
-   assert(HashArray[HPos]!=NULL);
+   assert(HashArray[HPos]!=nullptr);
    return HashArray[HPos]->operator[](SPos);
 }
 
@@ -156,11 +156,11 @@ int HashStrClassListe::fuegeEin(const StrClass& a)
    assert (HPos>=0);
    assert (HPos<Size);
    assert(HEAP_CHECK()>=1);
-   if(HashArray[HPos]==NULL)
+   if(HashArray[HPos]==nullptr)
    {
 	 // SortListe<StrClass> Erzeugen
 	 HashArray[HPos]=new SortListe<StrClass>();
-	 if( HashArray[HPos] == NULL ) INT_ERR(__LINE__);
+	 if( HashArray[HPos] == nullptr ) INT_ERR(__LINE__);
    }
    int SPos=HashArray[HPos]->fuegeEin(a);
    assert(HEAP_CHECK()>=1);
@@ -181,7 +181,7 @@ int HashStrClassListe::loesche(int i)
 	  INT_ERR(__LINE__);
    }
    assert(HEAP_CHECK()>=1);
-   assert(HashArray[HPos]!=NULL);
+   assert(HashArray[HPos]!=nullptr);
    if(SPos>=HashArray[HPos]->laenge()) INT_ERR(__LINE__);
    HashArray[HPos]->loesche(SPos);
    assert(HEAP_CHECK()>=1);
@@ -197,7 +197,7 @@ int HashStrClassListe::findeElement(const StrClass& x) const
    int HPos=abs(HashFunktion(x)%Size);
    assert (HPos>=0);
    assert (HPos>=0);
-   if(HashArray[HPos]!=NULL)
+   if(HashArray[HPos]!=nullptr)
    {
 	 int SPos=HashArray[HPos]->findeElement(x);
 	 if(SPos>=0) return HoleLinearerIndex(HPos, SPos);

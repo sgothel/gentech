@@ -97,7 +97,7 @@
 	int fuegeEin( const Tmp& );
 	int loesche( int i );
 	int findeElement( const Tmp& ) const ;
-	virtual int HashFunktion(const Tmp &a) const = NULL;
+	virtual int HashFunktion(const Tmp &a) const = nullptr;
         virtual void Ausgabe (ostream&);
 
   private:
@@ -122,18 +122,18 @@
 	 Size=m.Size;
 
 	 int i;
-	 assert(HashArray==NULL);
+	 assert(HashArray==nullptr);
 	 assert(HEAP_CHECK()>=1);
 
 	 if(Size>0)
 	 {
-	   if( ( HashArray=new SortListe<Tmp>*[Size] ) == NULL )
+	   if( ( HashArray=new SortListe<Tmp>*[Size] ) == nullptr )
 	   {
 		  fprintf(stderr, "<HashListe> ERROR : Es wurde versucht ein HashArray\n");
 		  fprintf(stderr, "<HashListe> mit der Groesse %d zu eroeffnen.\n", Size);
 		  INT_ERR(__LINE__);
 	   }
-	   if( ( AnzahlElemente=new int[Size] ) == NULL )
+	   if( ( AnzahlElemente=new int[Size] ) == nullptr )
 	   {
 		  fprintf(stderr, "<HashListe> ERROR : Es wurde versucht ein int-Array\n");
 		  fprintf(stderr, "<HashListe> fuer internen Gebrauch mit der Groesse %d zu eroeffnen.\n", Size);
@@ -143,11 +143,11 @@
 	   // Initialisierung .. Copy
 	   for( i=0; i<Size; i++ )
 	   {
-		 if(m.HashArray[i]!=NULL)
+		 if(m.HashArray[i]!=nullptr)
 		 {
 		   HashArray[i]=new SortListe<Tmp>(*m.HashArray[i]);
-		   if(HashArray[i]==NULL) INT_ERR(__LINE__);
-		 } else HashArray[i]=NULL;
+		   if(HashArray[i]==nullptr) INT_ERR(__LINE__);
+		 } else HashArray[i]=nullptr;
 		 AnzahlElemente[i]=m.AnzahlElemente[i];
 	   }
 	   assert(HEAP_CHECK()>=1);
@@ -164,34 +164,34 @@
 	   for(int i=0; i<Size; i++ )
 	   {
 		 assert(HEAP_CHECK()>=1);
-		 if(HashArray[i]!=NULL)
+		 if(HashArray[i]!=nullptr)
 		   delete HashArray[i];
 	   }
 	   assert(HEAP_CHECK()>=1);
 	   delete[] HashArray;
-	   HashArray=NULL;
+	   HashArray=nullptr;
 	   delete[] AnzahlElemente;
-	   AnzahlElemente=NULL;
+	   AnzahlElemente=nullptr;
 	   assert(HEAP_CHECK()>=1);
 	 }
   }
 
   template<class Tmp> HashListe<Tmp>::HashListe( int size )
-  : Size(size), anzahl(0), HashArray(NULL), AnzahlElemente(NULL)
+  : Size(size), anzahl(0), HashArray(nullptr), AnzahlElemente(nullptr)
   {
-	 assert(HashArray==NULL);
+	 assert(HashArray==nullptr);
 	 assert(HEAP_CHECK()>=1);
 	 if(size>0)
 	 {
-	   if( ( HashArray= new SortListe<Tmp>*[Size] ) == NULL )
+	   if( ( HashArray= new SortListe<Tmp>*[Size] ) == nullptr )
 	   {
 		  fprintf(stderr, "<HashListe> ERROR : Es wurde versucht ein HashArray\n");
 		  fprintf(stderr, "<HashListe> mit der Groesse %d zu eroeffnen.\n", Size);
 		  INT_ERR(__LINE__);
 	   }
-	   assert( HashArray!=NULL );
+	   assert( HashArray!=nullptr );
 	   assert(HEAP_CHECK()>=1);
-	   if( ( AnzahlElemente=new int[Size] ) == NULL )
+	   if( ( AnzahlElemente=new int[Size] ) == nullptr )
 	   {
 		  fprintf(stderr, "<HashListe> ERROR : Es wurde versucht ein int-Array\n");
 		  fprintf(stderr, "<HashListe> fuer internen Gebrauch mit der Groesse %d zu eroeffnen.\n", Size);
@@ -201,7 +201,7 @@
 	   // initialisierung
 	   for ( int i=0; i<Size; i++ )
 	   {
-		 HashArray[i]=NULL;
+		 HashArray[i]=nullptr;
 		 AnzahlElemente[i]=0;
 	   }
 	   assert(HEAP_CHECK()>=1);
@@ -209,7 +209,7 @@
   }
 
   template<class Tmp> HashListe<Tmp>::HashListe( const HashListe<Tmp> &m )
-  : HashArray(NULL), AnzahlElemente(NULL), anzahl(0), Size(0)
+  : HashArray(nullptr), AnzahlElemente(nullptr), anzahl(0), Size(0)
   { Copy(m); }
 
   template<class Tmp> HashListe<Tmp>& HashListe<Tmp>::operator=(const HashListe<Tmp> &m)
@@ -233,7 +233,7 @@
 		INT_ERR(__LINE__);
 	 }
 	 assert(HEAP_CHECK()>=1);
-	 assert(HashArray[HPos]!=NULL);
+	 assert(HashArray[HPos]!=nullptr);
 	 return (*HashArray[HPos])[SPos];
   }
 
@@ -245,11 +245,11 @@
 	 assert (HPos>=0);
 	 assert (HPos<Size);
 	 assert(HEAP_CHECK()>=1);
-	 if(HashArray[HPos]==NULL)
+	 if(HashArray[HPos]==nullptr)
 	 {
 	   // SortListe<Tmp> Erzeugen
 	   HashArray[HPos]=new SortListe<Tmp>();
-	   if( HashArray[HPos] == NULL ) INT_ERR(__LINE__);
+	   if( HashArray[HPos] == nullptr ) INT_ERR(__LINE__);
 	 }
 	 int SPos=HashArray[HPos]->fuegeEin(a);
 	 assert(HEAP_CHECK()>=1);
@@ -270,7 +270,7 @@
 		INT_ERR(__LINE__);
 	 }
 	 assert(HEAP_CHECK()>=1);
-	 assert(HashArray[HPos]!=NULL);
+	 assert(HashArray[HPos]!=nullptr);
 	 if(SPos>=HashArray[HPos]->laenge()) INT_ERR(__LINE__);
 	 HashArray[HPos]->loesche(SPos);
 	 assert(HEAP_CHECK()>=1);
@@ -286,7 +286,7 @@
 	 int HPos=abs(HashFunktion(x)%Size);
 	 assert (HPos>=0);
 	 assert (HPos>=0);
-	 if(HashArray[HPos]!=NULL)
+	 if(HashArray[HPos]!=nullptr)
 	 {
 	   int SPos=HashArray[HPos]->findeElement(x);
 	   if(SPos>=0) return HoleLinearerIndex(HPos, SPos);

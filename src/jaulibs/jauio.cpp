@@ -8,7 +8,7 @@
  *					  33615 Bielefeld
  *					  0521/139228
  *  Erstellungsdatum: 05.05.1994
- *  Žnderungsdatum  : 28.07.1994
+ *  ï¿½nderungsdatum  : 28.07.1994
  *
  *
  *  $Log: jauio.cc $
@@ -26,7 +26,14 @@
  *
  */
 
-# include "jauio.h"
+#include "jauio.h"
+
+#include <cstring>
+#include <cstdio>
+
+#include "interror.h"
+#include "assert.h"
+
 
 /*DOCST------------------------------------------------------------------------------
 
@@ -50,9 +57,9 @@
 	- Returncode
 	------------
 	OK : SpeicherAdresse.
-		 Der Speicher muss sp„ter mittels free wieder freigegeben werden.
+		 Der Speicher muss spï¿½ter mittels free wieder freigegeben werden.
 
-	FAlSE : NULL
+	FAlSE : nullptr
 
 	- Historie
 	----------
@@ -60,18 +67,18 @@
     2019-12-17 Sven Gothel: Introduce reusable buffer passing etc
 
 ------------------------------------------------------------------------------DOCEND*/
-char *GetFileInBuffer(const char *fName, const char *buffer, const size_t buffer_len, size_t *nbytes)
+char *GetFileInBuffer(const char *fName, char *buffer, const size_t buffer_len, size_t *nbytes)
 {
-  FILE *fTmp=NULL;
+  FILE *fTmp=nullptr;
   size_t i, ReadBytes;
   char *res;
 
-  if(buffer_len==0 || NULL == buffer) {
+  if(buffer_len==0 || nullptr == buffer) {
 	fprintf(stderr, "Illegal Arguments\n");
 	INT_ERR(__LINE__);
   }
 
-  if( (fTmp=fopen(fName,"rt")) == NULL )
+  if( (fTmp=fopen(fName,"rt")) == nullptr )
   {
 	INT_ERR(__LINE__);
   }
@@ -87,15 +94,13 @@ char *GetFileInBuffer(const char *fName, const char *buffer, const size_t buffer
   if(feof(fTmp)==0)
   {
     *nbytes=0;
-	res=NULL;
+	res=nullptr;
   } else {
     *nbytes=i+1;
-	Buffer[i]=0;
-    res=malloc(i+1);
+	buffer[i]=0;
+    res=static_cast<char*>( malloc(i+1) );
     memcpy(res, buffer, i+1);
   }
-
-
   fclose(fTmp);
 
   return res;

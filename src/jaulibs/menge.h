@@ -40,6 +40,9 @@
     int loesche(const T&);
     void inhalt() const;
     Menge operator*(Menge&) const;
+    const T& operator[](int i) const { return l[i]; }
+    T& operator[](int i) { return l[i]; }
+
   private:
     Liste<T> l;
   };

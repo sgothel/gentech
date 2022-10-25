@@ -92,7 +92,7 @@
 	int fuegeEin( const StrClass& );
 	int loesche( int i );
 	int findeElement( const StrClass& ) const ;
-	virtual int HashFunktion(const StrClass &a) const = NULL;
+	virtual int HashFunktion(const StrClass &a) const = 0;
 
   private:
 	void AktualisiereAnzahlElementePlus(int HPos);

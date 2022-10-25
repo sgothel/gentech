@@ -44,8 +44,8 @@
   public:
 	enum typ { UP, DOWN };
 	SortListe(typ Type=UP) : Liste<Tmp>(), Type(Type) { }
-	SortListe(const SortListe& m) : Type(m.Type), Liste<Tmp>(m) {}
-        virtual ~SortListe() { }
+	SortListe(const SortListe& m) : Liste<Tmp>(m), Type(m.Type) {}
+    virtual ~SortListe() { }
 
 	SortListe& operator=(const SortListe &m)
 	{

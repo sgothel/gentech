@@ -17,23 +17,19 @@
  *
 */
 
-# include "menge.h"
+#include "menge.h"
 
-static double maschEps()
+#include <cmath>
+#include <limits>
+
+template<> int Menge<double>::istElement(const double& x)
 {
-  double x = 1.0, res;
-  do res = x;
-  while (1.0 + (x /= 2) > 1.0);
-  return res;
-}
 
-const double eps = maschEps();
-
-int Menge<double>::istElement(const double& x)
-{
-  for (int i = 0; i < card(); i++)
-    if (fabs((*this)[i] - x) < eps*fabs(x))
+  for (int i = 0; i < card(); i++) {
+    if( ::fabs( (*this)[i] - x ) < std::numeric_limits<double>::epsilon() * ::fabs(x) ) {
       return i;
+    }
+  }
   return -1;
 }
 

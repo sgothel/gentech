@@ -33,6 +33,8 @@
 # include "sortlist.h"
 # include "strclass.h"
 
+#include <cstring>
+
 /*------------------------------------------------------------------------------
 
 	Variante fuer StrClass der Methode findeIndex der template
@@ -88,7 +90,7 @@
 			  else *o == x 	=> i=o, done
 
 ------------------------------------------------------------------------------*/
-int SortListe<StrClass>::findeIndex(const StrClass &x, int &u, int &o) const
+template<> int SortListe<StrClass>::findeIndex(const StrClass &x, int &u, int &o) const
 {
   int i=0;
   int done=0;
@@ -98,8 +100,8 @@ int SortListe<StrClass>::findeIndex(const StrClass &x, int &u, int &o) const
   if ( (*this).laenge() == 0 ) return -1;
 
   //Anfangsgrenzen austesten
-  result_o=strcmp( (*this)[o].GetStrPtr(), x.GetStrPtr() );
-  result_u=strcmp( (*this)[u].GetStrPtr(), x.GetStrPtr() );
+  result_o=strcmp( (*this)[o].getStrPtr(), x.getStrPtr() );
+  result_u=strcmp( (*this)[u].getStrPtr(), x.getStrPtr() );
   if(Type==UP)
   {
 	if( u == o && result_o < 0 ) o++;
@@ -119,7 +121,7 @@ int SortListe<StrClass>::findeIndex(const StrClass &x, int &u, int &o) const
   while ( !done && o-u>1)
   {
 	i=(u+o)/2;
-	result=strcmp( (*this)[i].GetStrPtr(), x.GetStrPtr() );
+	result=strcmp( (*this)[i].getStrPtr(), x.getStrPtr() );
 	if ( result < 0 )
 	{
 	  if ( Type==UP ) u=i;
