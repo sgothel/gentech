@@ -11,10 +11,22 @@ see our [meiosis compilation (pdf)](https://jausoft.com/cgit/gentech.git/plain/d
 
 Also available is the ancient [German documentation from 1994](https://jausoft.com/cgit/gentech.git/plain/doc/gentech-readme-de.txt).
 
+## Status
+The following parts require a rewrite due to poor English 
+as well as a review based on our findings regarding [meiosis](https://jausoft.com/cgit/gentech.git/plain/doc/meiosis.pdf).
+
+Same goes for the implementation.
+
+However, the salvaged version from 1994 is working 
+using C++17 on a GNU/Linux system.
+
+Related [bugzilla entries](https://jausoft.com/bugzilla/buglist.cgi?bug_status=__all__&list_id=6&order=Importance&product=GenAlgSolver&query_format=specific)
+are available.
+
 ## Supported Platforms
 C++17 and better.
 
-## Building Binaries
+## Building Gentech
 The project requires make and g++ >= 8.3 for building.
 
 Installing build dependencies on Debian (11 or better):
@@ -30,18 +42,6 @@ make
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The binaries shall reside within `bin`.
-
-## Status
-The following parts require a rewrite due to poor English 
-as well as a review based on our findings regarding meiosis.
-
-Same goes for the implementation.
-
-However, the salvaged version from 1994 is working 
-using C++17 on a GNU/Linux system.
-
-Related [bugzilla entries](https://jausoft.com/bugzilla/buglist.cgi?bug_status=__all__&list_id=6&order=Importance&product=GenAlgSolver&query_format=specific)
-are available.
 
 ## The Genetic Algorithm
 This genetic algorithm follows the natural process,
