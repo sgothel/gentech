@@ -1,15 +1,5 @@
 gentech.doc                                                    11.3.1994
 
-First of all, gentech.lib is used by gen-river AND gen-salesman !
-If you want to download the whole stuff, download:
-
-	jaulibs.zip
-	gen-river.zip
-	gen-salesman.zip
-	gentech.zip
-
-The following information appears on german. 
-
 Diese Documentation wurde fuer eine Hausarbeit im Fach
 Objektorietierter Programierung (OOP) an der FH Bielefeld
 unter der Betreuung von Prof. Dr. Bunse erstellt.

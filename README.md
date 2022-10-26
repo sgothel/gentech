@@ -7,7 +7,9 @@ This project's canonical repositories is hosted on [Gothel Software](https://jau
 
 ## Overview
 This genetic algorithm follows the natural process of meiosis,
-see our [meiosis compilation (pdf)](../plain/doc/meiosis.pdf).
+see our [meiosis compilation (pdf)](https://jausoft.com/cgit/gentech.git/doc/meiosis.pdf).
+
+Also available is the ancient [German documentation from 1994](https://jausoft.com/cgit/gentech.git/doc/gentech-readme-de.txt).
 
 ## Supported Platforms
 C++17 and better.
@@ -38,11 +40,12 @@ Same goes for the implementation.
 However, the salvaged version from 1994 is working 
 using C++17 on a GNU/Linux system.
 
-We also created related [bugzilla entries](https://jausoft.com/bugzilla/buglist.cgi?bug_status=__all__&list_id=6&order=Importance&product=GenAlgSolver&query_format=specific).
+Related [bugzilla entries](https://jausoft.com/bugzilla/buglist.cgi?bug_status=__all__&list_id=6&order=Importance&product=GenAlgSolver&query_format=specific)
+are available.
 
 ## The Genetic Algorithm
 This genetic algorithm follows the natural process,
-see our [compilation about meiosis (pdf)](../plain/doc/meiosis.pdf).
+see our [compilation about meiosis (pdf)](https://jausoft.com/cgit/gentech.git/doc/meiosis.pdf).
 
 ### The Basic Principle
 Nature defines and constructs lifeforms with its genome.
