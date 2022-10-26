@@ -11,17 +11,16 @@ see our [meiosis compilation (pdf)](https://jausoft.com/cgit/gentech.git/plain/d
 
 Also available is the ancient [German documentation from 1994](https://jausoft.com/cgit/gentech.git/plain/doc/gentech-readme-de.txt).
 
-## Status
-The following parts require a rewrite due to poor English 
-as well as a review based on our findings regarding [meiosis](https://jausoft.com/cgit/gentech.git/plain/doc/meiosis.pdf).
+This project is currently under review, see bugzilla Genetic Algorithm Solver:
+- [Review & Enhance Genetic Algorithm Implementation](https://jausoft.com/bugzilla/show_bug.cgi?id=1)
+- [All entries](https://jausoft.com/bugzilla/buglist.cgi?bug_status=__all__&list_id=6&order=Importance&product=GenAlgSolver&query_format=specific)
 
-Same goes for the implementation.
+## Status
+This document requires a rewrite due to poor English 
+as well as a review based on our findings regarding [meiosis](https://jausoft.com/cgit/gentech.git/plain/doc/meiosis.pdf).
 
 However, the salvaged version from 1994 is working 
 using C++17 on a GNU/Linux system.
-
-Related [bugzilla entries](https://jausoft.com/bugzilla/buglist.cgi?bug_status=__all__&list_id=6&order=Importance&product=GenAlgSolver&query_format=specific)
-are available.
 
 ## Supported Platforms
 C++17 and better.
