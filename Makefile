@@ -2,14 +2,15 @@
 CPP		:= g++ -x c++ -std=c++17 -c
 LN	    := g++
 
-GENTECHLIB	= src/gentech.lib
+GENTECHSRC	= src/gentech
+GENTECHINC	= include/gentech
 JAULIBS		= src/jaulibs
 
 # set the compiler flags
-#CPPFLAGS := -ggdb3 -O0 -Wall -Wextra -Werror -I. -I$(JAULIBS) -I$(GENTECHLIB)
+#CPPFLAGS := -ggdb3 -O0 -Wall -Wextra -Werror -I. -I$(JAULIBS) -I$(GENTECHINC)
 #LNFLAGS := -ggdb3 -O0 -Wall -lm
 
-CPPFLAGS := -O3 -DNDEBUG -Wall -Wextra -Werror -I. -I$(JAULIBS) -I$(GENTECHLIB)
+CPPFLAGS := -O3 -DNDEBUG -Wall -Wextra -Werror -I. -I$(JAULIBS) -I$(GENTECHINC)
 LNFLAGS := -O3 -Wall -lm
 
 TEMPDIRS = obj bin
@@ -42,7 +43,7 @@ obj/sales.o: src/gen-salesman/sales.cpp
 obj/sales_gen.o: src/gen-salesman/sales_gen.cpp
 	$(CPP) -o $@ $(CPPFLAGS) $<
 
-obj/gentech.o: $(GENTECHLIB)/gentech.cpp
+obj/gentech.o: $(GENTECHSRC)/gentech.cpp
 	$(CPP) -o $@ $(CPPFLAGS) $<
 
 obj/interror.o: $(JAULIBS)/interror.cpp
