@@ -25,8 +25,8 @@
 								<option id="gnu.cpp.compiler.option.warnings.extrawarn.1147765684" name="Extra warnings (-Wextra)" superClass="gnu.cpp.compiler.option.warnings.extrawarn" useByScannerDiscovery="false" value="true" valueType="boolean"/>
 								<option id="gnu.cpp.compiler.option.warnings.toerrors.91083530" name="Warnings as errors (-Werror)" superClass="gnu.cpp.compiler.option.warnings.toerrors" useByScannerDiscovery="false" value="true" valueType="boolean"/>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.compiler.option.include.paths.195142853" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/genetic/src/jaulibs}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/genetic/include/gentech}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gentech/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gentech/src/jaulibs}&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.136382677" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
@@ -34,8 +34,8 @@
 								<option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.exe.debug.option.optimization.level.302247198" name="Optimization Level" superClass="gnu.c.compiler.exe.debug.option.optimization.level" useByScannerDiscovery="false" valueType="enumerated"/>
 								<option defaultValue="gnu.c.debugging.level.max" id="gnu.c.compiler.exe.debug.option.debugging.level.241027834" name="Debug Level" superClass="gnu.c.compiler.exe.debug.option.debugging.level" useByScannerDiscovery="false" valueType="enumerated"/>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.c.compiler.option.include.paths.1919287758" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/genetic/src/gentech.lib}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/genetic/src/jaulibs}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gentech/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gentech/src/jaulibs}&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.235296482" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
@@ -48,14 +48,15 @@
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.assembler.exe.debug.1050418530" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.debug">
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.both.asm.option.include.paths.1626865343" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/genetic/src/gentech.lib}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/genetic/src/jaulibs}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gentech/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gentech/src/jaulibs}&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.1675286337" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="include"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src/gen-river"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src/gen-salesman"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src/gentech"/>
@@ -88,8 +89,10 @@
 								<option id="gnu.cpp.compiler.exe.release.option.optimization.level.1018031629" name="Optimization Level" superClass="gnu.cpp.compiler.exe.release.option.optimization.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.optimization.level.most" valueType="enumerated"/>
 								<option defaultValue="gnu.cpp.compiler.debugging.level.none" id="gnu.cpp.compiler.exe.release.option.debugging.level.1998447896" name="Debug Level" superClass="gnu.cpp.compiler.exe.release.option.debugging.level" useByScannerDiscovery="false" valueType="enumerated"/>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.compiler.option.include.paths.1201969754" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/genetic/src/gentech.lib}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/genetic/src/jaulibs}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/genetic/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gentech/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gentech/src/jaulibs}&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1648176116" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
@@ -99,6 +102,8 @@
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.c.compiler.option.include.paths.461519058" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/genetic/src/gentech.lib}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/genetic/src/jaulibs}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gentech/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gentech/src/jaulibs}&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1303503308" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
@@ -113,11 +118,20 @@
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.both.asm.option.include.paths.2071633435" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/genetic/src/gentech.lib}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/genetic/src/jaulibs}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gentech/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/gentech/src/jaulibs}&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.1019462764" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>
 						</toolChain>
 					</folderInfo>
+					<sourceEntries>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="include"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src/gen-river"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src/gen-salesman"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src/gentech"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src/jaulibs"/>
+					</sourceEntries>
 				</configuration>
 			</storageModule>
 			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
