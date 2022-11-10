@@ -22,15 +22,14 @@
 #include <cmath>
 #include <limits>
 
-template<> int Menge<double>::istElement(const double& x)
+template<> Menge<double>::size_type Menge<double>::istElement(const double& x)
 {
-
-  for (int i = 0; i < card(); i++) {
-    if( ::fabs( (*this)[i] - x ) < std::numeric_limits<double>::epsilon() * ::fabs(x) ) {
-      return i;
+    for (size_type i = 0; i < card(); i++) {
+        if( ::fabs( (*this)[i] - x ) < std::numeric_limits<double>::epsilon() * ::fabs(x) ) {
+            return i;
+        }
     }
-  }
-  return -1;
+    return npos;
 }
 
 

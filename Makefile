@@ -3,7 +3,7 @@ CPP		:= g++ -x c++ -std=c++17 -c
 LN	    := g++
 
 GENTECHSRC	= src/gentech
-GENTECHINC	= include/gentech
+GENTECHINC	= include
 JAULIBS		= src/jaulibs
 
 # set the compiler flags

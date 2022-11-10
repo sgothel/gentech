@@ -20,7 +20,8 @@
       # include <stdio.h>
   # endif
 
-  # include "gentech.h"
+  #include <gentech/gentech.hpp>
+
   class SalesGame {
   public:
     // Wertebereich des Nukleotids auf dem Chromosom,

@@ -12,7 +12,7 @@
 // Bielefeld, den 11.3.1994.
 
 # include <math.h>
-# include "sales.h"
+# include "sales.hpp"
 
 /* Es folgen die Zeilen der Abstandstabelle.             */
 /* Wegen der Symmetrie genuegt die obere Dreiecksmatrix. */
@@ -108,7 +108,7 @@ double SalesGame::Play(const Chromosom& Lsg, bool Gfx) const
 {
     if (Gfx == false)	{
         // Berechnung ohne Ausgabe
-        int ChromPos  = 1;
+        Chromosom::size_type ChromPos  = 1;
         double result = 0;
 
         for ( ;ChromPos < Lsg.laenge(); ChromPos++)	{
@@ -127,7 +127,7 @@ double SalesGame::Play(const Chromosom& Lsg, bool Gfx) const
     } else {
         // Protokolliert den zurueckgelegten Weg
         std::cout << std::endl << std::endl << "Die Loesung: " << std::endl;
-        for (int i = 1, ChromPos = 0; ChromPos < Lsg.laenge(); ChromPos++, i++)
+        for (Chromosom::size_type i = 1, ChromPos = 0; ChromPos < Lsg.laenge(); ChromPos++, i++)
         {
             std::cout << names[Lsg[ChromPos]] << " -> ";
             if (! (i % 4)) std::cout << std::endl;

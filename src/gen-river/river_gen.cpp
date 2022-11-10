@@ -11,46 +11,44 @@
 // Sven Goethel * http://www.jausoft.com - mailto:info@jausoft.com
 // Bielefeld, den 11.3.1994.
 
-# include "river_gen.h"
+# include "river_gen.hpp"
 
 RiverProblem::RiverProblem( int Monk, int Cannibal,
-			    int MaxChromosomen,
-			    int StartChromosomNumber,
-			    int StartChromosomLength,
-			    int Nukleotide,
+                size_type MaxChromosomen,
+                size_type StartChromosomNumber,
+                size_type StartChromosomLength,
+                size_type Nukleotide,
 			    SpliceCodeInfo *ptrSpliceCodeInfo,
-			    long InversionFreq,
-			    long TranslocationFreq,
-			    long AsymXOverFreq,
-			    int CrossVal,
-			    long MutationFreq
+			    size_type InversionFreq,
+			    size_type TranslocationFreq,
+			    size_type AsymXOverFreq,
+			    size_type CrossVal,
+			    size_type MutationFreq
 			  )
 : Chromosomen ( RiverGame::CODE_MIN_VAL, RiverGame::CODE_MAX_VAL,
                 MaxChromosomen, StartChromosomNumber,
 		StartChromosomLength, Nukleotide, ptrSpliceCodeInfo,
 		InversionFreq, TranslocationFreq, AsymXOverFreq,
-		CrossVal, MutationFreq
-	      ),
+		CrossVal, MutationFreq ),
   TheGame( Monk, Cannibal, 1 )
 { }
 
 RiverProblem::RiverProblem( int Monk, int Cannibal,
-			    int MaxChromosomen,
+                size_type MaxChromosomen,
 			    const std::string& StartGenFile,
-			    int Nukleotide,
+			    size_type Nukleotide,
 			    SpliceCodeInfo *ptrSpliceCodeInfo,
-			    long InversionFreq,
-			    long TranslocationFreq,
-			    long AsymXOverFreq,
-			    int CrossVal,
-			    long MutationFreq
+			    size_type InversionFreq,
+			    size_type TranslocationFreq,
+			    size_type AsymXOverFreq,
+			    size_type CrossVal,
+			    size_type MutationFreq
 			  )
 : Chromosomen ( RiverGame::CODE_MIN_VAL, RiverGame::CODE_MAX_VAL,
                 MaxChromosomen, StartGenFile,
 		Nukleotide, ptrSpliceCodeInfo,
 		InversionFreq, TranslocationFreq, AsymXOverFreq,
-		CrossVal, MutationFreq
-	      ),
+		CrossVal, MutationFreq ),
   TheGame( Monk, Cannibal, 1 )
 { }
 

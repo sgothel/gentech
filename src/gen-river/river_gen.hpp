@@ -16,38 +16,39 @@
 
   #include <string>
 
-  #include "gentech.h"
-  #include "river.h"
+  #include <gentech/gentech.hpp>
+
+  #include "river.hpp"
 
   class RiverProblem : public Chromosomen {
   public:
     // Der Konstruktor mit allen Einstellungen zum Loesen des Problems.
     RiverProblem( int Monk, int Cannibal,
-		  int MaxChromosomen,
-		  int StartChromosomNumber,
-		  int StartChromosomLength,
-		  int Nukleotide=3,
+          size_type MaxChromosomen,
+          size_type StartChromosomNumber,
+          size_type StartChromosomLength,
+          size_type Nukleotide=3,
 		  SpliceCodeInfo *ptrSpliceCodeInfo=nullptr,
-		  long InversionFreq=0,
-		  long TranslocationFreq=0,
-		  long AsymXOverFreq=0,
-		  int CrossVal=1,
-		  long MutationFreq=10000 // [1]
+		  size_type InversionFreq=0,
+		  size_type TranslocationFreq=0,
+		  size_type AsymXOverFreq=0,
+		  size_type CrossVal=1,
+		  size_type MutationFreq=10000 // [1]
 		) ;
     RiverProblem( int Monk, int Cannibal,
-		  int MaxChromosomen,
+          size_type MaxChromosomen,
 		  const std::string& StartGenFile,
-		  int Nukleotide=3,
+		  size_type Nukleotide=3,
 		  SpliceCodeInfo *ptrSpliceCodeInfo=nullptr,
-		  long InversionFreq=0,
-		  long TranslocationFreq=0,
-		  long AsymXOverFreq=0,
-		  int CrossVal=1,
-		  long MutationFreq=10000
+		  size_type InversionFreq=0,
+		  size_type TranslocationFreq=0,
+		  size_type AsymXOverFreq=0,
+		  size_type CrossVal=1,
+		  size_type MutationFreq=10000
 		) ;
     // Fitness fuer das uebergebene Chromosom.
     // Wert [0..1] !
-    virtual double Fitness (const Chromosom&);
+    virtual double Fitness(const Chromosom&);
     // Und das Spiel selbst als Element ...
     RiverGame TheGame;
   };

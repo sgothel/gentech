@@ -48,7 +48,7 @@ void int_err ( int line , const char * file ) {
     ads_abort ("\nACAD-ADS applikation aborted, fatal error!\n");
   # else
     fprintf(stderr, "%s\n", text);
-    exit(1);
+    abort();
   # endif
 }
 

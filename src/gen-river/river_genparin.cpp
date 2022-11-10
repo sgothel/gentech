@@ -11,7 +11,7 @@
 // Sven Goethel * http://www.jausoft.com - mailto:info@jausoft.com
 // Bielefeld, den 11.3.1994.
 
-#include "river_genparin.h"
+#include "river_genparin.hpp"
 
 #include <string>
 #include <vector>

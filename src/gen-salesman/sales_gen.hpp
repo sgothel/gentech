@@ -17,8 +17,8 @@
   #include <string>
   #include <limits>
 
-  #include "gentech.h"
-  #include "sales.h"
+  #include <gentech/gentech.hpp>
+  #include "sales.hpp"
 
   class SalesChromosomen ;
 
@@ -30,7 +30,7 @@
     : Chromosom(a) {}
 
     // Der Konstruktor fuer die Konstruktion eines Chromosomes
-    SalesChromosom ( SalesChromosomen & env, int StartChromosomLength=0 ) ;
+    SalesChromosom ( SalesChromosomen & env, size_type StartChromosomLength=0 ) ;
 
     // Der Konstruktor zum einlesen eines gespeicherten Chromosomes !
     // Die Fitness wird hier nicht berechnet !!!
@@ -42,34 +42,36 @@
   friend class SalesChromosom;
 
   public:
+    using Chromosomen::size_type;
+
     // Der Konstruktor mit allen Einstellungen zum Loesen des Problems.
     SalesChromosomen(
-		  int MaxChromosomen,
-		  int StartChromosomNumber,
-		  int StartChromosomLength,
-		  int Nukleotide=3,
+          size_type MaxChromosomen,
+		  size_type StartChromosomNumber,
+		  size_type StartChromosomLength,
+		  size_type Nukleotide=3,
 		  SpliceCodeInfo *ptrSpliceCodeInfo=nullptr,
-		  long InversionFreq=0,
-		  long TranslocationFreq=0,
-		  long AsymXOverFreq=0,
-		  int CrossVal=1,
-		  long MutationFreq=10000, // [1]
-		  int NoImprovingCrossingOvers=100
+		  size_type InversionFreq=0,
+		  size_type TranslocationFreq=0,
+		  size_type AsymXOverFreq=0,
+		  size_type CrossVal=1,
+		  size_type MutationFreq=10000, // [1]
+		  size_type NoImprovingCrossingOvers=100
 		) ;
     SalesChromosomen(
-		  int MaxChromosomen,
+          size_type MaxChromosomen,
 		  const std::string& StartGenFile,
-		  int Nukleotide=3,
+		  size_type Nukleotide=3,
 		  SpliceCodeInfo *ptrSpliceCodeInfo=nullptr,
-		  long InversionFreq=0,
-		  long TranslocationFreq=0,
-		  long AsymXOverFreq=0,
-		  int CrossVal=1,
-		  long MutationFreq=10000,
-		  int NoImprovingCrossingOvers=100
+		  size_type InversionFreq=0,
+		  size_type TranslocationFreq=0,
+		  size_type AsymXOverFreq=0,
+		  size_type CrossVal=1,
+		  size_type MutationFreq=10000,
+		  size_type NoImprovingCrossingOvers=100
 		) ;
     // Die Protokoll-Funktion zur Laufzeit
-    virtual int Echo (void);
+    virtual int Echo();
 
     // Protokolliere
     void Protokoll ( void ) ;
@@ -81,10 +83,10 @@
 			  );
     // Fitness fuer das uebergebene Chromosom.
     // Wert [0..1] !
-    double Fitness (const Chromosom&);
-    int CalcWholeFitness ( void ) ;
-    double GetWorstDistance (void) const	{ return WorstDistance; }
-    double GetBestDistance (void)  const	{ return BestDistance; }
+    double Fitness(const Chromosom&);
+    void CalcWholeFitness() ;
+    double GetWorstDistance() const	{ return WorstDistance; }
+    double GetBestDistance()  const	{ return BestDistance; }
 
     // Und das Spiel selbst als Element ...
     SalesGame TheGame;
@@ -101,23 +103,25 @@
     // Ueberladen der SterbeFunktion. Ausser dem Loeschen des 'Chromosom's
     // wird noch ueberpreft, ob dieses Chromosom die Loesung der laengsten
     // Wegstrecke darstellt
-    void Kill (int i)
-    {
+    void Kill(size_type i) {
       if ((*this)[i].GetFitness() < std::numeric_limits<double>::epsilon()) {
           Flag |= 1;	// Chromosom mit WorstDistance wird geloescht
       }
       loesche (i);
     }
 
-    virtual void CrossingOver (int m, int w);
+    virtual void CrossingOver (size_type m, size_type w);
 
-    void Mutation (void);
+    void Mutation();
 
     int NoImproving;
     int NoImprovingCrossingOvers;
 
-    virtual void CreateNewSymChromosom ( Chromosom &dest, int m, int w,
-				                         SortListe<int> &CrossPoints ) ;
+    void CreateNewSymChromosom ( Chromosom &dest, size_type m, size_type w,
+				                 SortListe<size_type, size_type>& CrossPoints ) override;
+
+    void validate(const Chromosom &c);
+
     // Zeigt im 0-ten Bit, ob sich WorstDistance veraendert hat.
     // Dann muss die Fitness der gesammten Population neu berechnet
     // werden
@@ -127,20 +131,19 @@
     // Speichert die Laenge der kuerzesten Strecke
     double BestDistance;
     // Bestimmen des laengsten geschlossenen Pfades
-    void AssignWorstDistance (void)
-    {
-      int i = 0;
-      double Distance;
+    void AssignWorstDistance () {
+        size_type i = 0;
+        double Distance;
 
-      // Variablen zuruecksetzen
-      WorstDistance = 0;
-      // und neu berechnen
-      while (i < laenge())	{
-	if ((Distance = TheGame.Play ((*this)[i], false)) > WorstDistance)
-	    WorstDistance = Distance;
-	i++;
-      }
-      Flag &= ~1;	// 0-te Bit wird geloescht
+        // Variablen zuruecksetzen
+        WorstDistance = 0;
+        // und neu berechnen
+        while (i < size())	{
+            if ((Distance = TheGame.Play ((*this)[i], false)) > WorstDistance)
+                WorstDistance = Distance;
+            i++;
+        }
+        Flag &= ~1;	// 0-te Bit wird geloescht
     }
 
   };

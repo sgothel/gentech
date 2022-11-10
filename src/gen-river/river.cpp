@@ -11,24 +11,26 @@
 // Sven Goethel * http://www.jausoft.com - mailto:info@jausoft.com
 // Bielefeld, den 11.3.1994.
 
-# include "river.h"
+# include "river.hpp"
 
 double RiverGame::Play(const Chromosom& Lsg, bool Gfx)
 {
-  int ChromPos=0, Regeln = true, BoatDir=TO_RIVERSIDE_B;
+  bool Regeln = true;
+  int BoatDir=TO_RIVERSIDE_B;
   RiversideAMonk=Monk;          RiversideBMonk=0;
   RiversideACannibal=Cannibal;  RiversideBCannibal=0;
 
   if(Gfx==true) {
     printf("\n\n\nFlussproblem mit %d Moenche und %d Kannibalen.",
      Monk, Cannibal );
-    printf("\nLoesungschromosom hat %d Zuege.", Lsg.laenge());
+    printf("\nLoesungschromosom hat %zu Zuege.", (size_t)Lsg.size());
     printf("\nFuer den naechsten Zug bitte Taste druecken !!!\n\n");
     printf("\n %5d M, %5d K  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
       RiversideAMonk, RiversideACannibal );
     printf(" %5d M, %5d K\n", RiversideBMonk, RiversideBCannibal );
   }
-  while (    ChromPos<Lsg.laenge()
+  Chromosom::size_type ChromPos=0;
+  while( ChromPos<Lsg.size()
 	  && Regeln == true
 	  && (RiversideBMonk+RiversideBCannibal) /
 	     (double)( Monk+Cannibal) < Frontier
@@ -81,15 +83,12 @@ double RiverGame::Play(const Chromosom& Lsg, bool Gfx)
       ( (double)Cannibal+(double)Monk )
     );
 
-    if(Regeln==true && ChromPos<Lsg.laenge() ) {
-      printf("\n\nLoesung mit %d Zuegen gefunden !!!! <TASTE DRUECKEN>",
-	ChromPos );
+    if(Regeln==true && ChromPos<Lsg.size() ) {
+      printf("\n\nLoesung mit %zu Zuegen gefunden !!!! <TASTE DRUECKEN>", (size_t)ChromPos );
     } else if(Regeln==false) {
-      printf("\n\nKeine Loesung mit %d Zuegen gefunden !!!! <TASTE DRUECKEN>",
-	ChromPos );
+      printf("\n\nKeine Loesung mit %zu Zuegen gefunden !!!! <TASTE DRUECKEN>", (size_t)ChromPos );
     } else {
-      printf("\n\nLoesungschromosom ist mit %d Zuegen zu kurz  !!!! <TASTE DRUECKEN>",
-	ChromPos );
+      printf("\n\nLoesungschromosom ist mit %zu Zuegen zu kurz  !!!! <TASTE DRUECKEN>", (size_t)ChromPos );
     }
     getchar();
   }

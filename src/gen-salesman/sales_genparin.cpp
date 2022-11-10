@@ -11,7 +11,7 @@
 // Sven Goethel * Stapenhorststr.35a * 33615 Bielefeld * 0521/139228
 // Bielefeld, den 11.3.1994.
 
-#include "sales_genparin.h"
+#include "sales_genparin.hpp"
 
 #include <string>
 #include <vector>

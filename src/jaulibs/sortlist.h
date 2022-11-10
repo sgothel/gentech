@@ -13,7 +13,7 @@
 // D.h. die Methode 'fuegeEin' fuegt die Listenelemente mittels
 // Bisektionierung gleich sortiert ein.
 // fuegeEin liefert nun den Index zurueck, den das eingefuegte Element
-// besitzt, ansonsten -1.
+// besitzt, ansonsten npos.
 // die Listenelemente gleich sortiert eingefuegt werden, mittel Bisektionierung.
 //
 // Neu ist die Methode findeElement, welche ebenfalls nach der MEthode der 
@@ -40,157 +40,124 @@
 
   # include "liste.h"
 
-  template <class Tmp> class SortListe : protected Liste<Tmp> {
-  public:
-	enum typ { UP, DOWN };
-	SortListe(typ Type=UP) : Liste<Tmp>(), Type(Type) { }
-	SortListe(const SortListe& m) : Liste<Tmp>(m), Type(m.Type) {}
-    virtual ~SortListe() { }
+  template <class Value_type, typename Size_type = uint_fast32_t> class SortListe : protected Liste<Value_type, Size_type> {
+      public:
+          typedef Value_type value_type;
+          typedef Size_type  size_type;
 
-	SortListe& operator=(const SortListe &m)
-	{
-	  Type=m.Type;
-	  Liste<Tmp>::operator=(m);
-	  return *this;
-	}
-	// fuegeEin RETURN : neuer Index, oder -1 fuer Fehler
-	int     fuegeEin(const Tmp&);
-	int     findeElement(const Tmp& x) const;
+          // Spezielle Zugriffsrechte fuer SortListe
+          using Liste<value_type, size_type>::loesche;
+          using Liste<value_type, size_type>::operator !;
+          using Liste<value_type, size_type>::operator[];
+          using Liste<value_type, size_type>::laenge;
+          using Liste<value_type, size_type>::size;
+          using Liste<value_type, size_type>::Referenz2Index;
+          using Liste<value_type, size_type>::istElement;
+          using Liste<value_type, size_type>::npos;
 
-	// Spezielle Zugriffsrechte fuer SortListe
-	using Liste<Tmp>::loesche;
-	using Liste<Tmp>::operator !;
-	using Liste<Tmp>::operator[];
-	using Liste<Tmp>::laenge;
-	using Liste<Tmp>::Referenz2Index;
-	using Liste<Tmp>::istElement;
+          enum order_t { UP, DOWN };
+          SortListe(order_t order=UP) : Liste<value_type>(), m_order(order) { }
+          SortListe(const SortListe& m) : Liste<value_type>(m), m_order(m.m_order) {}
+          virtual ~SortListe() { }
 
-  private:
-	// RETURN >= 0 gefunden index
-	// RETURN -1   nicht gefunden
-	int findeIndex(const Tmp &x, int &u, int &o) const;
-	typ Type;
+          SortListe& operator=(const SortListe &m)
+          {
+              m_order=m.m_order;
+              Liste<value_type>::operator=(m);
+              return *this;
+          }
+          // fuegeEin RETURN : neuer Index, oder npos fuer Fehler
+          size_type fuegeEin(const value_type& a) {
+              size_type u=0, o=laenge()>0 ? laenge()-1 : 0;
+              size_type i=findeIndex(a, u, o);
+              if ( npos == i )
+              {
+                  if( Liste<value_type>::fuegeEin(a, o) == 0 ) return npos;
+                  else return o;
+              }
+              else
+              {
+                  if( Liste<value_type>::fuegeEin(a, i) == 0 ) return npos;
+                  else return i;
+              }
+          }
+          size_type findeElement(const value_type& x) const {
+              size_type u=0, o=laenge()>0 ? laenge()-1 : 0;
+              return findeIndex(x, u, o);
+          }
+
+      private:
+          /**
+              - Beschreibung
+              --------------
+              Rueckgabe des Index oder npos.
+              Rueckgabe der unteren, u, und oberen, o, Grenze
+              der letzten Bisektionierung.
+              Die Grenze o wird bei nichtauffinden des index derart gesetzt, dass
+              das Element x dort eingesetzt werden  koennte !
+
+              - Parameter
+              -----------
+              E:        x   : Die zu suchende StrClass
+              E/A:    u : Start der unteren Grenze, RETURN siehe oben
+              E/A:    o : Start der oberen Grenze, RETURN siehe oben
+
+
+              - allgemeine Ein- und Ausgabeeinheiten
+              --------------------------------------
+              keine
+
+              - Returncode
+              ------------
+              Der Index des gefundenen Elementes oder npos.
+
+              - Historie
+              ----------
+              12.8.1994 Sven Gothel
+
+           * @param x
+           * @param u
+           * @param o
+           * @return >= 0 gefunden index,  npos nicht gefunden
+           */
+          size_type findeIndex(const value_type &x, size_type &u, size_type &o) const {
+              size_type i=0;
+
+              // da gibt es nix ....
+              if ( size() == 0 ) { return npos; }
+
+              //Anfangsgrenzen austesten
+              if(m_order==UP) {
+                  if( u == o && (*this)[o] < x ) { o++; }
+                  else if( (*this)[u] > x   )  { o=u;           }
+                  else if( (*this)[o] < x   )  { u=o; o++;      }
+                  else if( (*this)[u] == x  )  { return u;   }
+                  else if( (*this)[o] == x  )  { return o;   }
+              } else {
+                  if( u == o && (*this)[o] > x ) { o++; }
+                  else if( (*this)[u] < x   )  { o=u;           }
+                  else if( (*this)[o] > x   )  { u=o; o++;      }
+                  else if( (*this)[u] == x  )  { return u; }
+                  else if( (*this)[o] == x  )  { return o; }
+              }
+
+              // bisektionieren bis kein Element zwischen den grenzen
+              while( o-u > 1 ) {
+                  i=(u+o)/2;
+                  if ( (*this)[i] < x ) {
+                      if ( m_order==UP ) u=i;
+                      else o=i;
+                  } else if ( (*this)[i] > x ) {
+                      if ( m_order==UP ) o=i;
+                      else u=i;
+                  } else {
+                      return i;
+                  }
+              }
+              return npos;
+          }
+          order_t m_order;
   };
-
-  template<class Tmp> int SortListe<Tmp>::fuegeEin(const Tmp& a)
-  {
-	int u=0, o=laenge()>0 ? laenge()-1 : 0;
-	int i=findeIndex(a, u, o);
-	if ( i < 0 )
-	{
-	  if( Liste<Tmp>::fuegeEin(a, o) == 0 ) return -1;
-	  else return o;
-	}
-	else
-	{
-	  if( Liste<Tmp>::fuegeEin(a, i) == 0 ) return -1;
-	  else return i;
-	}
-  }
-
-  template<class Tmp> int SortListe<Tmp>::findeElement(const Tmp& x) const
-  {
-	int u=0, o=laenge()>0 ? laenge()-1 : 0;
-	return findeIndex(x, u, o);
-  }
-
-  /*------------------------------------------------------------------------------
-
-	  ----------------------------------------------------------
-	  template<class Tmp> int ::findeIndex(const Tmp &x, int &u, int &o) const
-
-	  - Beschreibung
-	  --------------
-	  Rueckgabe des Index oder -1.
-	  Rueckgabe der unteren, u, und oberen, o, Grenze
-	  der letzten Bisektionierung.
-	  Die Grenze o wird bei nichtauffinden des index derart gesetzt, dass
-	  das Element x dort eingesetzt werden  koennte !
-
-	  - Parameter
-	  -----------
-	  E: 		x	: Die zu suchende StrClass
-	  E/A:    u	: Start der unteren Grenze, RETURN siehe oben
-	  E/A:    o	: Start der oberen Grenze, RETURN siehe oben
-
-
-	  - allgemeine Ein- und Ausgabeeinheiten
-	  --------------------------------------
-	  keine
-
-	  - Returncode
-	  ------------
-	  Der Index des gefundenen Elementes oder -1.
-
-	  - Historie
-	  ----------
-	  12.8.1994 Sven Gothel
-
-	  Die Anfangsgrenzen werden wie folgt ausgetestet :
-
-	  UP :
-				u == o &&
-				  *o < x 		=> 	o++
-				else *u > x 	=> o=u
-				else *o < x 	=> u=o, o++
-				else *u == x 	=> i=u, done
-				else *o == x 	=> i=o, done
-
-	  DOWN :
-				u == o &&
-				  *o > x 		=> 	o++
-				else *u < x 	=> o=u
-				else *o > x 	=> u=o, o++
-
-				else * u == x 	-> 
-				i = u, done
-
-				else * o == x 	=> i=o, done
-
-  ------------------------------------------------------------------------------*/
-  template<class Tmp> int SortListe<Tmp>::findeIndex(const Tmp &x, int &u, int &o) const
-  {
-	int i=0;
-	int done=0;
-
-	// da gibt es nix ....
-	if ( (*this).laenge() == 0 ) return -1;
-
-	//Anfangsgrenzen austesten
-	if(Type==UP)
-	{
-	  if( u == o && (*this)[o] < x ) o++;
-	  else if( (*this)[u] > x 	)  { o=u;			}
-	  else if( (*this)[o] < x 	)  { u=o; o++;  	}
-	  else if( (*this)[u] == x 	)  { i=u, done=1; 	}
-	  else if( (*this)[o] == x 	)  { i=o; done=1; 	}
-	} else {
-	  if( u == o && (*this)[o] > x ) o++;
-	  else if( (*this)[u] < x 	)  { o=u;			}
-	  else if( (*this)[o] > x 	)  { u=o; o++;  	}
-	  else if( (*this)[u] == x 	)  { i=u, done=1; 	}
-	  else if( (*this)[o] == x 	)  { i=o; done=1; 	}
-	}
-
-	// bisektionieren bis kein Element zwischen den grenzen
-	while ( !done && o-u>1)
-	{
-	  i=(u+o)/2;
-	  if ( (*this)[i] < x )
-	  {
-		if ( Type==UP ) u=i;
-		else o=i;
-	  }
-	  else if ( (*this)[i] > x )
-	  {
-		if ( Type==UP ) o=i;
-		else u=i;
-	  }
-	  else done=1;
-	}
-
-	return done==0 ? -1 : i ;
-  }
 
 # endif
 

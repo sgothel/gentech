@@ -13,9 +13,9 @@
 #include <cstdio>
 #include <iostream>
 
-#include "sales_genparin.h"
-#include "sales_gen.h"
-#include "sales.h"
+#include "sales_genparin.hpp"
+#include "sales_gen.hpp"
+#include "sales.hpp"
 
 const char SalesVersion[]="0.4";
 

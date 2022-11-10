@@ -13,9 +13,9 @@
 #include <cstdio>
 #include <iostream>
 
-#include "river_genparin.h"
-#include "river_gen.h"
-#include "river.h"
+#include "river_genparin.hpp"
+#include "river_gen.hpp"
+#include "river.hpp"
 
 int Menue() {
   int result;

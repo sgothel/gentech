@@ -12,11 +12,11 @@
 // Sven Goethel * http://www.jausoft.com - mailto:info@jausoft.com
 // Bielefeld, den 11.3.1994.
 
-# ifndef _RIVER_H
-  # define _RIVER_H
+#ifndef _RIVER_H
+  #define _RIVER_H
 
-  # include <stdio.h>
-  # include "gentech.h"
+  #include <stdio.h>
+  #include <gentech/gentech.hpp>
 
   class RiverGame {
   public:

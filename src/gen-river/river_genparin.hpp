@@ -16,7 +16,7 @@
 
   #include <string>
 
-  #include "gentech.h"
+  #include <gentech/gentech.hpp>
 
   // external template function definition in .cpp
   template <class T>

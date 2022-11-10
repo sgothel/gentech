@@ -16,7 +16,7 @@
 
   #include <string>
 
-  #include "gentech.h"
+  #include <gentech/gentech.hpp>
 
   // external template function definition in .cpp
   template <class T>
@@ -28,8 +28,7 @@
 
   class GenParameter {
   public:
-      void Input( int NukleoMinVal, int NukleoMaxVal,
-		  NukleoTyp *ptrSpliceCode=nullptr );
+      void Input( int NukleoMinVal, int NukleoMaxVal, NukleoTyp *ptrSpliceCode=nullptr );
       std::string FileName;
       std::string FileNameHeader;
       SpliceCodeInfo TheSpliceCodeInfo;

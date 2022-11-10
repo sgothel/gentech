@@ -83,31 +83,32 @@
 
   class HashStrClassListe {
   public:
-	HashStrClassListe( int size = 0 ) ;
+    typedef uint_fast32_t size_type;
+	HashStrClassListe( size_type size = 0 ) ;
 	HashStrClassListe( const HashStrClassListe &m );
-	virtual ~HashStrClassListe( void ) { Dest(); };
-	StrClass& operator[](int i) const ;
+	virtual ~HashStrClassListe() { Dest(); };
+	StrClass& operator[](size_type i) const ;
 	HashStrClassListe& operator=(const HashStrClassListe &m);
 	int laenge() const { return anzahl; }
 	int fuegeEin( const StrClass& );
-	int loesche( int i );
+	void loesche( size_type i );
 	int findeElement( const StrClass& ) const ;
 	virtual int HashFunktion(const StrClass &a) const = 0;
 
   private:
-	void AktualisiereAnzahlElementePlus(int HPos);
-	void AktualisiereAnzahlElementeMinus(int HPos);
-	int HoleLinearerIndex(int HPos, int SPos) const ;
-	int HoleHashNSortPosition ( int LinearerIndex,
-								int &HPos,
-								int &SortPos
-							  ) const ;
+	void AktualisiereAnzahlElementePlus(size_type HPos);
+	void AktualisiereAnzahlElementeMinus(size_type HPos);
+	int HoleLinearerIndex(size_type HPos, size_type SPos) const ;
+	bool HoleHashNSortPosition ( size_type LinearerIndex,
+	                             size_type &HPos,
+	                             size_type &SortPos
+							   ) const ;
 	void Copy(const HashStrClassListe &);
 	void Dest();
-	SortListe<StrClass> **HashArray; // Ein Array von Pointern .....
-	int * AnzahlElemente;
-	int Size;
-	int anzahl;
+	SortListe<StrClass, size_type> **HashArray; // Ein Array von Pointern .....
+	size_type * AnzahlElemente;
+	size_type Size;
+	size_type anzahl;
   };
 
 #endif

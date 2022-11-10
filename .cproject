@@ -57,7 +57,7 @@
 					</folderInfo>
 					<sourceEntries>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="include"/>
-						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src/gen-river"/>
+						<entry excluding="river_main.cpp|river_gen.cpp|river_genparin.cpp|river.cpp" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src/gen-river"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src/gen-salesman"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src/gentech"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src/jaulibs"/>

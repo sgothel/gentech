@@ -45,7 +45,7 @@
 	- Beschreibung
 	--------------
 	Variante fuer StrClass ...
-	Rueckgabe des Index oder -1.
+	Rueckgabe des Index oder npos.
 	Rueckgabe der unteren, u, und oberen, o, Grenze
 	der letzten Bisektionierung.
 	Die Grenze o wird bei nichtauffinden des index derart gesetzt, dass
@@ -65,77 +65,54 @@
 
 	- Returncode
 	------------
-	Der Index des gefundenen Elementes oder -1.
+	Der Index des gefundenen Elementes oder npos.
 
 	- Historie
 	----------
 	12.8.1994 Sven Gothel
 
-	Die Anfangsgrenzen werden wie folgt ausgetestet :
-
-	UP :
-			  u == o &&
-				*o < x 		=> 	o++
-			  else *u > x 	=> o=u
-			  else *o < x 	=> u=o, o++
-			  else *u == x 	=> i=u, done
-			  else *o == x 	=> i=o, done
-
-	DOWN :
-			  u == o &&
-				*o > x 		=> 	o++
-			  else *u < x 	=> o=u
-			  else *o > x 	=> u=o, o++
-			  else *u == x 	=> i=u, done
-			  else *o == x 	=> i=o, done
-
 ------------------------------------------------------------------------------*/
-template<> int SortListe<StrClass>::findeIndex(const StrClass &x, int &u, int &o) const
+template<> SortListe<StrClass>::size_type SortListe<StrClass>::findeIndex(const StrClass &x, uint_fast32_t &u, uint_fast32_t &o) const
 {
-  int i=0;
-  int done=0;
-  int result, result_o, result_u;
+    size_type i=0;
+    int result, result_o, result_u;
 
-  // da gibt es nix ....
-  if ( (*this).laenge() == 0 ) return -1;
+    // da gibt es nix ....
+    if ( size() == 0 ) { return npos; }
 
-  //Anfangsgrenzen austesten
-  result_o=strcmp( (*this)[o].getStrPtr(), x.getStrPtr() );
-  result_u=strcmp( (*this)[u].getStrPtr(), x.getStrPtr() );
-  if(Type==UP)
-  {
-	if( u == o && result_o < 0 ) o++;
-	else if( result_u > 0 	)  { o=u;			}
-	else if( result_o < 0 	)  { u=o; o++;  	}
-	else if( result_u == 0 	)  { i=u, done=1; 	}
-	else if( result_o == 0 	)  { i=o; done=1; 	}
-  } else {
-	if( u == o && result_o > 0 ) o++;
-	else if( result_u < 0 	)  { o=u;			}
-	else if( result_o > 0 	)  { u=o; o++;  	}
-	else if( result_u == 0 	)  { i=u, done=1; 	}
-	else if( result_o == 0 	)  { i=o; done=1; 	}
-  }
+    //Anfangsgrenzen austesten
+    result_o=strcmp( (*this)[o].getStrPtr(), x.getStrPtr() );
+    result_u=strcmp( (*this)[u].getStrPtr(), x.getStrPtr() );
+    if(m_order==UP)
+    {
+        if( u == o && result_o < 0 ) { o++; }
+        else if( result_u > 0 	)  { o=u;			}
+        else if( result_o < 0 	)  { u=o; o++;  	}
+        else if( result_u == 0 	)  { return u; }
+        else if( result_o == 0 	)  { return o; }
+    } else {
+        if( u == o && result_o > 0 ) { o++; }
+        else if( result_u < 0 	)  { o=u;			}
+        else if( result_o > 0 	)  { u=o; o++;  	}
+        else if( result_u == 0 	)  { return u; 	}
+        else if( result_o == 0 	)  { return o; 	}
+    }
 
-  // bisektionieren bis kein Element zwischen den grenzen
-  while ( !done && o-u>1)
-  {
-	i=(u+o)/2;
-	result=strcmp( (*this)[i].getStrPtr(), x.getStrPtr() );
-	if ( result < 0 )
-	{
-	  if ( Type==UP ) u=i;
-	  else o=i;
-	}
-	else if ( result > 0 )
-	{
-	  if ( Type==UP ) o=i;
-	  else u=i;
-	}
-	else done=1;
-  }
-
-  return done==0 ? -1 : i ;
+    // bisektionieren bis kein Element zwischen den grenzen
+    while( o-u>1 ) {
+        i=(u+o)/2;
+        result=strcmp( (*this)[i].getStrPtr(), x.getStrPtr() );
+        if ( result < 0 ) {
+            if ( m_order==UP ) u=i;
+            else o=i;
+        } else if ( result > 0 ) {
+            if ( m_order==UP ) o=i;
+            else u=i;
+        } else {
+            return i;
+        }
+    }
+    return npos;
 }
 
 

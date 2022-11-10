@@ -25,69 +25,69 @@
  *
 */
 
-# ifndef _MENGE_H
-  # define _MENGE_H
+#ifndef _MENGE_H
+    #define _MENGE_H
 
-  #include <iostream>
-  #include "liste.h"      // Template-Liste
+    #include <iostream>
+    #include <limits>
+    #include "liste.h"      // Template-Liste
 
-  template<class T> class Menge {
-  public:
-    int leer() const { return l.laenge() == 0; }
-    int card() const { return l.laenge(); }
-    int istElement(const T&);
-    int fuegeEin(const T&);
-    int loesche(const T&);
-    void inhalt() const;
-    Menge operator*(Menge&) const;
-    const T& operator[](int i) const { return l[i]; }
-    T& operator[](int i) { return l[i]; }
+    template<class T> class Menge {
+        public:
+            typedef typename Liste<T>::size_type size_type;
 
-  private:
-    Liste<T> l;
-  };
+            /**
+             * Special value representing maximal value of size_type, used to denote an invalid index position return value, i.e. `no position`.
+             */
+            static constexpr const size_type npos = std::numeric_limits<size_type>::max();
 
-  template<class T> int Menge<T>::fuegeEin(const T& x)
-  {
-    return (istElement(x) >= 0) ? 0 : l.fuegeEin(x);
-  }
+            bool leer() const { return l.laenge() == 0; }
+            size_type card() const { return l.laenge(); }
+            size_type istElement(const T& x) {
+                for (size_type i = 0; i < card(); ++i) {
+                    if (l[i] == x) {
+                        return i;
+                    }
+                }
+                return npos;
+            }
+            bool fuegeEin(const T& x) {
+                return ( npos != istElement(x) ) ? false : l.fuegeEin(x);
+            }
+            bool loesche(const T& x) {
+                const int pos = istElement(x);
+                if( npos != pos ) {
+                    return l.loesche(pos);
+                } else {
+                    return false;
+                }
+            }
+            void inhalt() const {
+                std::cout << "{ ";
+                if (!leer()) {
+                    std::cout << l[0];
+                    for (int i=1; i<card(); i++) {
+                        std::cout << ", " << l[i];
+                    }
+                }
+                std::cout << " }" << std::endl;
+            }
 
-  template<class T> int Menge<T>::loesche(const T& x)
-  {
-    int pos = istElement(x);
-    if (pos >= 0)
-      l.loesche(pos);
-    return pos >= 0;
-  }
+            Menge operator*(Menge& a) const {
+                Menge<T> axb;
+                for (int i=0; i<card(); i++) {
+                    if (a.istElement(l[i]) >= 0) {
+                        axb.fuegeEin(l[i]);
+                    }
+                }
+                return axb;
+            }
+            const T& operator[](int i) const { return l[i]; }
+            T& operator[](int i) { return l[i]; }
 
-  template<class T> int Menge<T>::istElement(const T& x)
-  {
-    for (int i = 0; i < card(); i++)
-      if (l[i] == x)
-	return i;
-    return -1;
-  }
-
-  template<class T> void Menge<T>::inhalt() const
-  {
-    std::cout << "{ ";
-    if (!leer()) {
-      std::cout << l[0];
-      for (int i=1; i<card(); i++) {
-          std::cout << ", " << l[i];
-      }
-    }
-    std::cout << " }" << std::endl;
-  }
-
-  template<class T> Menge<T> Menge<T>::operator*(Menge<T>& a) const
-  {
-    Menge<T> axb;
-    for (int i=0; i<card(); i++)
-      if (a.istElement(l[i]) >= 0)
-	axb.fuegeEin(l[i]);
-    return axb;
-  }
+        private:
+            Liste<T> l;
+    };
 
   // TESTTEIL DER MENGE ::
   /*
