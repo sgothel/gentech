@@ -32,9 +32,9 @@ SalesChromosom::SalesChromosom ( SalesChromosomen & env, size_type StartChromoso
                 << "Chromsomenlaenge groesser als Nukleotideauswahl !!";
     }
     for (size_type i=0; i < StartChromosomLength; ++i) {
-        long Rand;
-        while (istElement (Rand = Random (env.UserNukleoMinVal, env.UserNukleoMaxVal)) );
-        fuegeEin (Rand);
+        NukleoTyp Rand;
+        while( contains( Rand = Random (env.UserNukleoMinVal, env.UserNukleoMaxVal) ) ) ;
+        push_back(Rand);
     }
     assert (size() == StartChromosomLength);
 }
@@ -67,7 +67,7 @@ SalesChromosomen::SalesChromosomen(
   for (int i=StartChromosomNumber ; i > 0  ; i--) {
     SalesChromosom Gamma (*this, StartChromosomLength);
     assert (Gamma.size() == StartChromosomLength);
-    fuegeEin (Gamma);
+    push_back(Gamma);
   }
   assert (size()==StartChromosomNumber);
 }
@@ -110,7 +110,7 @@ double SalesChromosomen::Fitness (const Chromosom &Lsg)
 }
 
 int SalesChromosomen::Evolution(double GoalFitness, const std::string& chrptrPtkFile,
-			                    double BirthRate, int Bigamie )
+			                    double BirthRate, int Bigamie, size_type NoImprovingCrossingOvers )
 {
     (void) GoalFitness;
     double CutFitness = 0; 	// Der Cut beim Sterben
@@ -195,7 +195,7 @@ void SalesChromosomen::validate(const Chromosom &c ) {
     Menge<NukleoTyp> test;
 
     for (size_type j = 0; j < c.size(); j++) {
-        test.fuegeEin (c[j]);
+        test.insert(c[j]);
     }
     if( test.card() != c.size() ) {
         std::cout << "\ndest:\n" << c
@@ -254,7 +254,7 @@ void SalesChromosomen::CreateNewSymChromosom (Chromosom &dest, size_type m, size
 
             // Gene im Intervall puffern
             for (n = von; n < bis; n++)
-                intervall.fuegeEin (THIS[w][n], intervall.size());
+                intervall.push_back( THIS[w][n] );
 
             // Gene aus 'w1' in 'dest' suchen und loeschen
             for (n = 0; n < dest.size() && intervall.size() > 0; n++)
@@ -262,8 +262,8 @@ void SalesChromosomen::CreateNewSymChromosom (Chromosom &dest, size_type m, size
                 size_type l = 0;
                 while( l < intervall.size() ) {
                     if (intervall[l] == dest[n])        {
-                        dest.loesche (n);
-                        intervall.loesche (l);
+                        dest.erase(n);
+                        intervall.erase(l);
                         l = 0;	// Neuen Suchdurchlauf initiieren
                     } else {
                         ++l;
@@ -274,7 +274,7 @@ void SalesChromosomen::CreateNewSymChromosom (Chromosom &dest, size_type m, size
 
             // Intervall von 'dest' mit Genen von 'w' fuellen
             for (n = von; n < bis; n++) {
-                dest.fuegeEin (THIS[w][n], n);
+                dest.insert(n, THIS[w][n]);
             }
         }
     } while( !done );
@@ -294,7 +294,7 @@ void SalesChromosomen::CreateNewSymChromosom (Chromosom &dest, size_type m, size
 }
 
 /* UNIQUE NUKLEOTIDS */
-void SalesChromosomen::CrossingOver (size_type m, size_type w)
+void SalesChromosomen::CrossingOver (size_type m, size_type w) noexcept
 // Order Crossing Over
 //
 {
@@ -306,7 +306,7 @@ void SalesChromosomen::CrossingOver (size_type m, size_type w)
 
     // Kreuzungspunkte sortiert eintragen.
     for (size_type i = 0; i < CrossVal; ++i) {
-        CrossPoints.fuegeEin( Random (0 , THIS[w].size()));
+        CrossPoints.insert( Random (0 , THIS[w].size()));
     }
 
     SalesChromosom NeuA (*this);
@@ -314,7 +314,7 @@ void SalesChromosomen::CrossingOver (size_type m, size_type w)
     int SplicedCode;
 
     CreateNewSymChromosom (NeuA, m, w, CrossPoints);
-    fuegeEin (NeuA, size());
+    push_back( NeuA );
     SplicedCode=NeuA.Splicing();
     if(SplicedCode>0) {
         SplicedChromosoms++;
@@ -324,7 +324,7 @@ void SalesChromosomen::CrossingOver (size_type m, size_type w)
     // eingebundene Chromosom einsetzen !!!
     THIS[size()-1].SetFitness(Fitness(NeuA));
     CreateNewSymChromosom (NeuB, w, m, CrossPoints);
-    fuegeEin (NeuB, size());
+    push_back( NeuB );
     SplicedCode=NeuB.Splicing();
     if(SplicedCode>0) {
         SplicedChromosoms++;
@@ -384,13 +384,9 @@ void SalesChromosomen::Mutation()
                         pos =  Random (l_pos, h_pos);
                     } while( nukleotide_idx == pos );
                 }
-                THIS[chromosom_idx].fuegeEin( THIS[chromosom_idx][nukleotide_idx], pos );
-                if( pos <= nukleotide_idx ) {
-                    THIS[chromosom_idx].loesche (nukleotide_idx+1);
-                } else {
-                    THIS[chromosom_idx].loesche (nukleotide_idx);
-                }
-                assert( THIS[chromosom_idx].size() == chromosom_len );
+                const NukleoTyp n = THIS[chromosom_idx][pos];
+                THIS[chromosom_idx][pos] = THIS[chromosom_idx][nukleotide_idx];
+                THIS[chromosom_idx][nukleotide_idx] = n;
 
                 MutationsThisGeneration++;
                 mutated = true;
@@ -414,7 +410,7 @@ void SalesChromosomen::Mutation()
     }
 }
 
-int SalesChromosomen::Echo()
+bool SalesChromosomen::Echo() const
 {
     if (Generation == 1 ) {
         printf(" Generation: BestGeneration: AverageDistance: BestDistance:"
@@ -434,7 +430,7 @@ int SalesChromosomen::Echo()
         printf ("\n\nGenerationen / Evolutionsdauer        : %3zu  /  %3zu s\n",
                 (size_t)Generation, (size_t)(EvolutionEnd-EvolutionStart));
     }
-    return 1;
+    return true;
 }
 
 void SalesChromosomen::CalcWholeFitness()

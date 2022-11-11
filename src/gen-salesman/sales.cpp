@@ -111,7 +111,7 @@ double SalesGame::Play(const Chromosom& Lsg, bool Gfx) const
         Chromosom::size_type ChromPos  = 1;
         double result = 0;
 
-        for ( ;ChromPos < Lsg.laenge(); ChromPos++)	{
+        for ( ;ChromPos < Lsg.size(); ChromPos++)	{
             if( Lsg[ChromPos] > Lsg[ChromPos-1] ) {
                 result += lineno[ Lsg[ChromPos-1] ][ Lsg[ChromPos] - Lsg[ChromPos-1] - 1 ];
             } else {
@@ -127,7 +127,7 @@ double SalesGame::Play(const Chromosom& Lsg, bool Gfx) const
     } else {
         // Protokolliert den zurueckgelegten Weg
         std::cout << std::endl << std::endl << "Die Loesung: " << std::endl;
-        for (Chromosom::size_type i = 1, ChromPos = 0; ChromPos < Lsg.laenge(); ChromPos++, i++)
+        for (Chromosom::size_type i = 1, ChromPos = 0; ChromPos < Lsg.size(); ChromPos++, i++)
         {
             std::cout << names[Lsg[ChromPos]] << " -> ";
             if (! (i % 4)) std::cout << std::endl;

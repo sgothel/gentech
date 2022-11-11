@@ -54,6 +54,7 @@
   #include <iostream>
   #include <limits>
   #include <type_traits>
+  #include <stdexcept>
 
   #include <cstdlib>
   #include <cstdio>
@@ -175,10 +176,28 @@
         virtual ~Liste() noexcept { dest(); }
         Liste(const Liste& m) noexcept : m_start(0), m_count(m.m_count), m_current_elem(0), m_current_idx(0) { copy(m); }
 
-        virtual void insert(const size_type pos, const value_type& x) noexcept  {
-            fuegeEin(x, pos);
+        /**
+         * Like std::vector::push_back(), copy
+         * @param x the value to be added at the tail.
+         */
+        constexpr void push_back(const value_type& x) noexcept {
+            insert(size(), x);
         }
-        virtual bool fuegeEin(const value_type& x, size_type idx = 0) noexcept {
+
+        /**
+         * Like std::vector::push_front(), copy
+         * @param x the value to be added at the front.
+         */
+        constexpr void push_front(const value_type& x) noexcept {
+            insert(0, x);
+        }
+
+        /**
+         * Like std::vector::insert(), copy
+         * @param pos iterator before which the content will be inserted. pos may be the end() iterator
+         * @param x element value to insert
+         */
+        constexpr void insert(size_type idx, const value_type& x) noexcept  {
             const size_type old_idx = m_current_idx;
             if( idx > m_count ) {
                 fprintf(stderr,"\n Falscher Index.");
@@ -201,11 +220,11 @@
             } else {
                 --idx; // Das Element 'ein' vor dem Ziel anfahren !
                 if( idx < old_idx ) {
-                    for (size_type k = old_idx; k > idx; k--) {
+                    for (size_type k = old_idx; k > idx; --k) {
                         iter_bw();
                     }
                 } else if( idx > old_idx ) {
-                    for (size_type k = old_idx; k < idx; k++) {
+                    for (size_type k = old_idx; k < idx; ++k) {
                         iter_fw();
                     }
                 }
@@ -220,37 +239,37 @@
             #ifdef __LISTE_PARANOIA__
                 ParanoiaCheck();
             #endif
-            return true;
         }
 
-        bool fuegeEin(const Liste& AL, size_type idx = 0) noexcept {
+        void insert(const size_type idx, const Liste& AL) noexcept {
             for (size_type j = 0; j < AL.size(); ++j) {
-                if(!fuegeEin (AL[j], idx+j)) {
-                    return false;
-                }
+                fuegeEin (AL[j], idx+j);
             }
             #ifdef __LISTE_PARANOIA__
                 ParanoiaCheck();
             #endif
-            return true;
         }
 
-        virtual bool loesche(size_type i) noexcept {
+        /**
+         * Like std::vector::erase(), removes the elements at pos.
+         * @return iterator following the last removed element.
+         */
+        constexpr void erase(const size_type idx) noexcept {
             const size_type oldInd = m_current_idx;
-            if (i >= m_count )
+            if (idx >= m_count )
             {
                 fprintf(stderr,"\n Falscher Index.");
                 fprintf(stderr,"\n Es wurde auf ein Element an %zu.Stelle einer Liste mit %zu Elementen zu loeschen.\n",
-                        (size_t)i, (size_t)size());
+                        (size_t)idx, (size_t)size());
                 INT_ERR(__LINE__);
             }
 
-            if (i < oldInd) {
-                for (size_type k = oldInd; k > i; k--) {
+            if (idx < oldInd) {
+                for (size_type k = oldInd; k > idx; k--) {
                     iter_bw();
                 }
-            } else if (i > oldInd) {
-                for(size_type k = oldInd; k < i; k++) {
+            } else if (idx > oldInd) {
+                for(size_type k = oldInd; k < idx; k++) {
                     iter_fw();
                 }
             }
@@ -279,7 +298,18 @@
             #ifdef __LISTE_PARANOIA__
                 ParanoiaCheck();
             #endif
-            return true;
+        }
+
+        /**
+         * removes the elements in the range [first_idx, last_idx).
+         * @return number of deleted elements
+         */
+        constexpr size_type erase (const size_type first_idx, const size_type last_idx) {
+            size_type count = 0;
+            for(size_type i = first_idx; i<last_idx; ++i, ++count) {
+                erase(first_idx);
+            }
+            return count;
         }
 
         Liste& operator= (const Liste& m) {
@@ -316,14 +346,43 @@
             return !(Liste::operator == (L));
         }
 
-        virtual const value_type& operator[](size_type i) const noexcept
-        { return get_element(i); }
+        /**
+         * Like std::vector::operator[](size_type), immutable reference.
+         */
+        const_reference operator[](size_type i) const noexcept {
+            return get_element(i);
+        }
 
-        virtual value_type& operator[](size_type i) noexcept
-        { return get_element(i); }
+        /**
+         * Like std::vector::operator[](size_type), mutable reference.
+         */
+        reference operator[](size_type i) noexcept {
+            return get_element(i);
+        }
 
-        size_type laenge() const noexcept { return m_count; }
-        size_type size() const noexcept { return m_count; }
+        /**
+         * Like std::vector::at(size_type), immutable reference.
+         */
+        const_reference at(size_type i) const {
+            return get_element(i);
+        }
+
+        /**
+         * Like std::vector::at(size_type), mutable reference.
+         */
+        reference at(size_type i) {
+            return get_element(i);
+        }
+
+        /**
+         * Like std::vector::empty().
+         */
+        constexpr bool empty() const noexcept { return 0 == m_count; }
+
+        /**
+         * Like std::vector::size().
+         */
+        constexpr size_type size() const noexcept { return m_count; }
 
         virtual void Ausgabe (std::ostream& OS) const noexcept {
             const size_type Zeilenlaenge = 10;
@@ -340,24 +399,22 @@
             OS << " >";
         }
 
-        bool istElement(const value_type& x, size_type i=0) const noexcept {
-            for ( ; i < m_count; i++) {
-                if ((*this)[i] == x) {
-                    return true;
-                }
-            }
-            return false;
+        bool contains(const value_type& x) const noexcept {
+            return npos != indexOf(x);
         }
 
         /**
-         * Returns index of given element if found or size()
-         * @param a
+         * Returns index of given element if found or npos
+         * @param x
          * @return
          */
-        size_type Referenz2Index(const value_type& a) const noexcept {
-            size_type i = 0;
-            while(i < size() && &a!=&(*this)[i]) { i--; }
-            return i;
+        size_type indexOf(const value_type& x) const noexcept {
+            for (size_type i=0; i < m_count; i++) {
+                if ((*this)[i] == x) {
+                    return i;
+                }
+            }
+            return npos;
         }
 
         #ifdef __LISTE_PARANOIA__
@@ -411,15 +468,11 @@
             }
         }
 
-        value_type& get_element(const size_type idx) const noexcept {
+        value_type& get_element(const size_type idx) const {
             const size_type oldInd = m_current_idx;
             if ( idx >= m_count ) {
-                fprintf(stderr,"\n Falscher Index.");
-                fprintf(stderr,"\n Es wurde auf ein Element mit index %zu einer Liste mit %zd Elementen zugegriffen.\n",
-                        (size_t)idx, (size_t)size());
-                INT_ERR(__LINE__);
+                throw std::out_of_range("Index "+std::to_string(idx)+" >= size "+std::to_string(m_count));
             }
-
             if (idx < oldInd) {
                 for (size_type k = oldInd; k > idx; k--) {
                     iter_bw();

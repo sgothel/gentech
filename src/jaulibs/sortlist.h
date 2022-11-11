@@ -46,19 +46,17 @@
           typedef Size_type  size_type;
 
           // Spezielle Zugriffsrechte fuer SortListe
-          using Liste<value_type, size_type>::loesche;
+          using Liste<value_type, size_type>::erase;
           using Liste<value_type, size_type>::operator !;
           using Liste<value_type, size_type>::operator[];
-          using Liste<value_type, size_type>::laenge;
           using Liste<value_type, size_type>::size;
-          using Liste<value_type, size_type>::Referenz2Index;
-          using Liste<value_type, size_type>::istElement;
+          using Liste<value_type, size_type>::contains;
           using Liste<value_type, size_type>::npos;
 
           enum order_t { UP, DOWN };
           SortListe(order_t order=UP) : Liste<value_type>(), m_order(order) { }
           SortListe(const SortListe& m) : Liste<value_type>(m), m_order(m.m_order) {}
-          virtual ~SortListe() { }
+          ~SortListe() override { }
 
           SortListe& operator=(const SortListe &m)
           {
@@ -67,22 +65,19 @@
               return *this;
           }
           // fuegeEin RETURN : neuer Index, oder npos fuer Fehler
-          size_type fuegeEin(const value_type& a) {
-              size_type u=0, o=laenge()>0 ? laenge()-1 : 0;
+          size_type insert(const value_type& a) {
+              size_type u=0, o=size()>0 ? size()-1 : 0;
               size_type i=findeIndex(a, u, o);
-              if ( npos == i )
-              {
-                  if( Liste<value_type>::fuegeEin(a, o) == 0 ) return npos;
-                  else return o;
-              }
-              else
-              {
-                  if( Liste<value_type>::fuegeEin(a, i) == 0 ) return npos;
-                  else return i;
+              if ( npos == i ) {
+                  Liste<value_type>::insert(o, a);
+                  return o;
+              } else {
+                  Liste<value_type>::insert(i, a);
+                  return i;
               }
           }
           size_type findeElement(const value_type& x) const {
-              size_type u=0, o=laenge()>0 ? laenge()-1 : 0;
+              size_type u=0, o=size()>0 ? size()-1 : 0;
               return findeIndex(x, u, o);
           }
 

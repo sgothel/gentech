@@ -161,7 +161,7 @@ int HashStrClassListe::fuegeEin(const StrClass& a)
 	 HashArray[HPos]=new SortListe<StrClass>();
 	 if( HashArray[HPos] == nullptr ) INT_ERR(__LINE__);
    }
-   size_type SPos=HashArray[HPos]->fuegeEin(a);
+   size_type SPos=HashArray[HPos]->insert(a);
    assert(HEAP_CHECK()>=1);
    AktualisiereAnzahlElementePlus(HPos);
    anzahl++;
@@ -181,8 +181,8 @@ void HashStrClassListe::loesche(size_type i)
    }
    assert(HEAP_CHECK()>=1);
    assert(HashArray[HPos]!=nullptr);
-   if(SPos>=HashArray[HPos]->laenge()) INT_ERR(__LINE__);
-   HashArray[HPos]->loesche(SPos);
+   if(SPos>=HashArray[HPos]->size()) INT_ERR(__LINE__);
+   HashArray[HPos]->erase(SPos);
    assert(HEAP_CHECK()>=1);
    AktualisiereAnzahlElementeMinus(HPos);
    anzahl--;

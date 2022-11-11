@@ -22,7 +22,7 @@
 #include <cmath>
 #include <limits>
 
-template<> Menge<double>::size_type Menge<double>::istElement(const double& x)
+template<> Menge<double>::size_type Menge<double>::indexOf(const double& x) const noexcept
 {
     for (size_type i = 0; i < card(); i++) {
         if( ::fabs( (*this)[i] - x ) < std::numeric_limits<double>::epsilon() * ::fabs(x) ) {

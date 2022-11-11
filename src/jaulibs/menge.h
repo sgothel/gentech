@@ -41,9 +41,14 @@
              */
             static constexpr const size_type npos = std::numeric_limits<size_type>::max();
 
-            bool leer() const { return l.laenge() == 0; }
-            size_type card() const { return l.laenge(); }
-            size_type istElement(const T& x) {
+            bool empty() const noexcept { return l.size() == 0; }
+            size_type card() const noexcept { return l.size(); }
+
+            bool contains(const T& x) const noexcept {
+                return npos != indexOf(x);
+            }
+
+            size_type indexOf(const T& x) const noexcept {
                 for (size_type i = 0; i < card(); ++i) {
                     if (l[i] == x) {
                         return i;
@@ -51,20 +56,26 @@
                 }
                 return npos;
             }
-            bool fuegeEin(const T& x) {
-                return ( npos != istElement(x) ) ? false : l.fuegeEin(x);
+
+            bool insert(const T& x) {
+                if( contains(x) ) {
+                    return false;
+                }
+                l.push_back(x);
+                return true;
             }
-            bool loesche(const T& x) {
-                const int pos = istElement(x);
+            bool erase(const T& x) {
+                const int pos = indexOf(x);
                 if( npos != pos ) {
-                    return l.loesche(pos);
+                    l.erase(pos);
+                    return true;
                 } else {
                     return false;
                 }
             }
             void inhalt() const {
                 std::cout << "{ ";
-                if (!leer()) {
+                if (!empty()) {
                     std::cout << l[0];
                     for (int i=1; i<card(); i++) {
                         std::cout << ", " << l[i];
@@ -76,8 +87,8 @@
             Menge operator*(Menge& a) const {
                 Menge<T> axb;
                 for (int i=0; i<card(); i++) {
-                    if (a.istElement(l[i]) >= 0) {
-                        axb.fuegeEin(l[i]);
+                    if( a.contains( l[i] ) ) {
+                        axb.insert(l[i]);
                     }
                 }
                 return axb;

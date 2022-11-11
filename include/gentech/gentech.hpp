@@ -167,18 +167,18 @@
 
           // Aus dem Chromosom werden die Introns herausgefiltert.
           // RETURN : Anzahl der herausgefilterten Nukleotide.
-          virtual size_type Splicing();
+          size_type Splicing();
 
           // Ein Intron wird eingesetzt gemaess des SpliceCodes.
           // Der Rumpf eines Introns besteht zur Zeit aus Zufaellig gewaehlte
           // Zahlen !!! Die Laenge muss >= der Laenge der Spleiss-Sequenz haben.
-          virtual void InsertIntrons( size_type von, size_type length );
+          void InsertIntrons( size_type von, size_type length );
 
           // Ein zufaellig gewaehltes Exon, bzw. Genabschnitt wird umgekehrt.
-          virtual void Inversion() ;
+          void Inversion() ;
 
           // Ein zufaellig gewaehltes Exon, bzw. Genabschnitt wird umpositioniert.
-          virtual void Translocation() ;
+          void Translocation() ;
 
           void SetFitness(double Fitness) { Chromosom::Fitness=Fitness; }
 
@@ -312,11 +312,9 @@
           //                            als Abbruchbedingung !
           // chrptrPtkFile            : Das Protokollfile ...
           // return                   : Die Nummer der EndGeneration !!!
-          virtual int Evolution(
-                  double GoalFitness, const std::string& chrptrPtkFile,
-                  double BirthRate=0.6, int Bigamie=0,
-                  size_type NoImprovingCrossingOvers = 100
-          );
+          virtual int Evolution(double GoalFitness, const std::string& chrptrPtkFile,
+                                double BirthRate=0.6, int Bigamie=0,
+                                size_type NoImprovingCrossingOvers = 100 );
 
           // Die Mittlere-Fitness der Generation einholen ....
           double GetAverageFitness() const { return AverageFitness; }
@@ -402,7 +400,7 @@
 
           // Diese Funktion existiert nur zum Ueberladen bei kuenftigen
           // Nachfahren
-          virtual void Kill (size_type i)	{ loesche (i); }
+          virtual void Kill(const size_type i) noexcept { erase(i); }
 
 
           // STATISTISCHE VARIABLEN FUER DAS PROTOKOLL !!!
