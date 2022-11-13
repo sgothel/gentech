@@ -1,15 +1,29 @@
-// genparin.cpp                                                  7.3.1994
-//
-// Diese Modul wurde fuer eine Hausarbeit im Fach
-// Objektorietierter Programierung (OOP) an der FH Bielefeld
-// unter der Betreuung von Prof. Dr. Bunse erstellt.
-//
-// Autoren der Hausarbeit : Sven Goethel und Christian Mueller
-//
-//
-// Jegliches Copyright aller Dateien ist im Besitz der Autoren.
-// Sven Goethel * Stapenhorststr.35a * 33615 Bielefeld * 0521/139228
-// Bielefeld, den 11.3.1994.
+/*
+ * Author: Sven Gothel <sgothel@jausoft.com>
+ * Copyright (c) 1994-2022 Gothel Software e.K.
+ * Copyright (c) 1994 Christian Mueller
+ *
+ * Proprietary licenses are available
+ * via Gothel Software e.K. <sgothel@jausoft.com>.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA  02111-1307, USA.
+ *
+ * You can also check the GNU General Public License
+ * in the internet at http://www.gnu.org/copyleft/gpl.html !
+ */
 
 #include "sales_genparin.hpp"
 
@@ -17,6 +31,8 @@
 #include <vector>
 #include <algorithm>
 #include <iostream>
+
+using namespace jau::gentech;
 
 // Symbolische Konstanten fuer die Eingabe der Parameter
 const int InputCrossVal=4;
@@ -90,7 +106,7 @@ std::string FileNameInput( int mode, const std::string& end )
           } else if(mode==WRITE_MODE) {
               test=fopen(FileName.c_str(),"wb");
           } else {
-              INT_ERR(__LINE__);
+              ABORT("invalid file mode %d", mode);
           }
       }
   } while( test==nullptr && !end.empty() );
@@ -99,15 +115,15 @@ std::string FileNameInput( int mode, const std::string& end )
 }
 
 void GenParameter::Input( int NukleoMinVal, int NukleoMaxVal,
-			  NukleoTyp *ptrSpliceCode
+			  nucleotide_t *ptrSpliceCode
 			)
 {
     (void) ptrSpliceCode;
 
     char input[80];
 
-    GenParameter::UserNukleoMinVal=NukleoMinVal;
-    GenParameter::UserNukleoMaxVal=NukleoMaxVal;
+    GenParameter::min_nucleotide_value=NukleoMinVal;
+    GenParameter::max_nucleotide_value=NukleoMaxVal;
 
     printf("\n\n Parameter-Eingabe fuer den Genetischen Algorithmus :");
     printf("\n { Der [DefaultWert] ist mit Return einzugeben ! }\n");
@@ -118,18 +134,18 @@ void GenParameter::Input( int NukleoMinVal, int NukleoMaxVal,
     FileNameHeader.resize(FileNameHeader.length() - 4);
 
     sprintf( input,"\n Maximale Populationsgroesse [%d]:  ",InputMaxChromosom);
-    ::Input (input, MaxChromosomen, (int)InputMaxChromosom);
+    ::Input (input, max_chromosom_count, (int)InputMaxChromosom);
 
     std::string reply = stdin_input("\n Start-Population from file (y/n) ?", "n", { "y", "n" } );
     if(reply[0]=='y') {
         FileName = FileNameInput(READ_MODE,".pop");
     } else {
         FileName.clear();
-        sprintf( input," Start-Chromosomen Anzahl [%d] : ", MaxChromosomen );
-        ::Input (input, StartChromosomNumber, MaxChromosomen);
+        sprintf( input," Start-Chromosomen Anzahl [%d] : ", max_chromosom_count );
+        ::Input (input, init_chromosom_count, max_chromosom_count);
         //    sprintf( input," Start-Chromosomen Laenge [%d] (Minimum ist 2) :  ", InputChromStartLength);
         //    ::Input (input, StartChromosomLength, InputChromStartLength);
-        StartChromosomLength = InputChromStartLength;
+        init_chromosom_len = InputChromStartLength;
     }
     do {
         sprintf( input," Geburtenrate [%0.3lf] (0 < x <= 1): ", InputBirthRate);
@@ -146,7 +162,7 @@ void GenParameter::Input( int NukleoMinVal, int NukleoMaxVal,
     ::Input (input, Nukleotide, NukleoMaxVal-NukleoMinVal+1 );
   } while ( Nukleotide<0 || Nukleotide>NukleoMaxVal-NukleoMinVal+1 );
      */
-    Nukleotide = NukleoMaxVal-NukleoMinVal+1;
+    nucleotide_count = NukleoMaxVal-NukleoMinVal+1;
     sprintf( input," Crossing-Over Punkte [%d]:  ", InputCrossVal);
     ::Input (input, CrossVal, InputCrossVal);
     sprintf( input," Mutation-Frequenz [%ld]:  ", InputMutationsFreq);

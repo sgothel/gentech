@@ -1,14 +1,29 @@
-// main.cpp
-//
-// Diese Modul wurde fuer eine Hausarbeit im Fach
-// Objektorietierter Programierung (OOP) an der FH Bielefeld
-// unter der Betreuung von Prof. Dr. Bunse erstellt.
-//
-// Autoren der Hausarbeit : Sven Goethel und Christian Mueller
-//
-// Jegliches Copyright aller Dateien ist im Besitz der Autoren.
-// Sven Goethel * Stapenhorststr.35a * 33615 Bielefeld * 0521/139228
-// Bielefeld, den 11.3.1994.
+/*
+ * Author: Sven Gothel <sgothel@jausoft.com>
+ * Copyright (c) 1994-2022 Gothel Software e.K.
+ * Copyright (c) 1994 Christian Mueller
+ *
+ * Proprietary licenses are available
+ * via Gothel Software e.K. <sgothel@jausoft.com>.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA  02111-1307, USA.
+ *
+ * You can also check the GNU General Public License
+ * in the internet at http://www.gnu.org/copyleft/gpl.html !
+ */
 
 #include <cstdio>
 #include <iostream>
@@ -17,7 +32,7 @@
 #include "sales_gen.hpp"
 #include "sales.hpp"
 
-const char SalesVersion[]="0.4";
+using namespace jau::gentech;
 
 int Menue() {
   int result;
@@ -39,31 +54,15 @@ int main (int argc, const char* argv[]) {
 
   int choosen;
   GenParameter MyGenParameter;
-  NukleoTyp ptrSpliceCode[] = { 1,4,3,0,4,2,3,0 };
+  nucleotide_t ptrSpliceCode[] = { 1,4,3,0,4,2,3,0 };
 
 #ifndef NDEBUG
-  printf("\n\nSALESMAN's SOLUTION Version %s [*]\n", SalesVersion);
+  printf("\n\nTraveller Salesman Problem [*]\n");
 #else
-  printf("\n\nSALESMAN's SOLUTION Version %s [*] (debug version)\n", SalesVersion);
+  printf("\n\nTraveller Salesman Problem [*] (debug version)\n");
 #endif
-  printf("\n (utilizing a genetic-algorithm, version %s)", GenTechVersion);
-  std::cout << "\n\nFuer 25 deutsche Staedte wird eine moeglichst kurze Rundstrecke ermittelt."
-       << "\nDabei sind sowohl der Startpunkt der Rundreise, als auch die Drehrichtung "
-       << "\nvariabel."
-       << "\nDie bis jetzt gefundene kuerzeste Rundreise hat eine Laenge von 3332 Km"
-       << "\nund fuehrt in folgender Reihenfoge durch die 25 Staedte:"
-       << "\nBerlin-Dresden-Leipzig-Nuernberg-Muenchen-Stuttgart-Freiburg/Breisgau-"
-       << "\nKarlsruhe-Saarbruecken-Wiesbaden-Frankfurt/Main-Koeln-Aachen-Duesseldorf-"
-       << "\nWuppertal-Essen-Dortmund-Kassel-Bielefeld-Bremen-Hamburg-Kiel-Hannover-"
-       << "\nBraunschweig-Magdeburg-Berlin";
-  printf("\n\n Autoren : Sven Goethel und Christian Mueller\n");
-  printf("\n [*] Dieses ausfuehrbare File ist FREEWARE.");
-  printf("\n     Jegliches Copyright aller Dateien ist im Besitz der Autoren.");
-  printf("\n     Sven Goethel *  www.jausoft.com ");
-  printf("\n     Christian Mueller");
-  printf("\n     Bielefeld, den 28.05.1994.\n");
-  printf("\n     ");
-  printf("\n     Bielefeld, den 23.03.1998 (last changes).\n");
+  printf("\n (Gentech version %s)", jau::gentech::VERSION);
+  printf("\n");
   std::cout << "\n<BITTE EINE TASTE DRUECKEN>";
   getchar();
   do {
@@ -73,10 +72,10 @@ int main (int argc, const char* argv[]) {
               MyGenParameter.Input( SalesGame::CODE_MIN_VAL, SalesGame::CODE_MAX_VAL, ptrSpliceCode );
               if ( MyGenParameter.FileName[0]==0 ) {
                   SalesChromosomen MySalesProblem(
-                          MyGenParameter.MaxChromosomen,
-                          MyGenParameter.StartChromosomNumber,
-                          MyGenParameter.StartChromosomLength,
-                          MyGenParameter.Nukleotide,
+                          MyGenParameter.max_chromosom_count,
+                          MyGenParameter.init_chromosom_count,
+                          MyGenParameter.init_chromosom_len,
+                          MyGenParameter.nucleotide_count,
                           0,
                           MyGenParameter.InversionFreq,
                           MyGenParameter.TranslocationFreq,
@@ -93,9 +92,9 @@ int main (int argc, const char* argv[]) {
                   MySalesProblem.GetTheBestEverChromosom().Save( MyGenParameter.FileNameHeader + ".gen" );
               } else {
                   SalesChromosomen MySalesProblem(
-                          MyGenParameter.MaxChromosomen,
+                          MyGenParameter.max_chromosom_count,
                           MyGenParameter.FileName,
-                          MyGenParameter.Nukleotide,
+                          MyGenParameter.nucleotide_count,
                           0,
                           MyGenParameter.InversionFreq,
                           MyGenParameter.TranslocationFreq,
@@ -117,10 +116,10 @@ int main (int argc, const char* argv[]) {
           case 2:
               std::string FileName = FileNameInput(READ_MODE,".gen");
               SalesChromosomen MySalesProblem(
-                      MyGenParameter.MaxChromosomen,
-                      MyGenParameter.StartChromosomNumber,
-                      MyGenParameter.StartChromosomLength,
-                      MyGenParameter.Nukleotide,
+                      MyGenParameter.max_chromosom_count,
+                      MyGenParameter.init_chromosom_count,
+                      MyGenParameter.init_chromosom_len,
+                      MyGenParameter.nucleotide_count,
                       0,
                       MyGenParameter.InversionFreq,
                       MyGenParameter.TranslocationFreq,

@@ -1,0 +1,5 @@
+#include <gentech/version.hpp>
+
+const char* jau::gentech::VERSION = "@gentech_VERSION_LONG@";
+const char* jau::gentech::VERSION_SHORT = "@gentech_VERSION_SHORT@";
+const char* jau::gentech::VERSION_API = "@gentech_VERSION_API@";

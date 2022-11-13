@@ -19,8 +19,7 @@ This project is currently under review, see bugzilla Genetic Algorithm Solver:
 This document requires a rewrite due to poor English 
 as well as a review based on our findings regarding [meiosis](https://jausoft.com/cgit/gentech.git/plain/doc/meiosis.pdf).
 
-However, the salvaged version from 1994 is working 
-using C++17 on a GNU/Linux system.
+This version is working using C++17 on a GNU/Linux system.
 
 ## Supported Platforms
 C++17 and better.
@@ -35,7 +34,7 @@ apt install git build-essential g++ gcc libc-dev make
 
 For a generic build use:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.sh}
-git clone https://jausoft.com/cgit/gentech.git
+git clone --recurse-submodule git://jausoft.com/srv/scm/gentech.git
 cd gentech
 make
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -52,7 +51,7 @@ The genome is coded by it's chromosomes.
 
 A chromosome is a chain of nucleotides, the elements of the chromosomes.
 In nature these nucleotides a represented with the following four bases:
-Adenine (A), Guanine (G), Cytosine (C) und Thymine (T).
+Adenine (A), Guanine (G), Cytosine (C) and Thymine (T).
 The different sequences of these nucleotides, bases, on the chromosome,
 does code the genome[2].
 
@@ -72,7 +71,7 @@ E.g.:
 Besides the "normal" crossing over (homologous or symmetric crossing over[2]),
 asymmetric crossing over exists[2].
 Within the asymmetric crossing over, at least in the version 
-of this genetic algorythm, one child contains the whole
+of this genetic algorithm, one child contains the whole
 genome of both parents.<br/>
 So a growing (length) of the chromosomes is possible.
 
@@ -187,24 +186,24 @@ in this case, the birth rate equals one.
 The other way is to use a lower birth rate, e.g. 0.6.
 In this case 60 percent new individuals are created,
 whereby their parents must die.
-Because bigamously relationships are allowed for both methods,
+Because bigamous relationships are allowed for both methods,
 after the decease of the parents as much individuals with a worse
 fitness must die, as the population's maximum is not exceeded.
 
 ### Implementation Details
-This natural analoge principle is declared in the file
+This natural analogue principle is declared in the file
 [gentech.h](include/gentech/gentech.h), 
 and defined in the file [gentech.cpp](src/gentech/gentech.cpp).
 
-The class 'Chromosom' contains the nukleotides of one chromosome,
+The class 'Chromosome' contains the nucleotides of one chromosome,
 the methods for splicing and mutations besides others.
 For details, please have a look at the file [gentech.h](include/gentech/gentech.h).
 
-The class 'Chromosomen' (many chromosomes -> population) 
+The class 'Chromosomes' (many chromosomes -> population) 
 contains the methods for selection, crossing over and the
 whole evolution process.
 
-The fitness method within the class 'Chromosomen'
+The fitness method within the class 'Chromosomes'
 is a virtual one.
 The user, who want's to define the problem,
 must define this one regarding his problem.
@@ -225,7 +224,7 @@ In this case, one nucleotide has the following range of values within [0..4]:
 1 : 2 Monks
 2 : 1 Cannibal
 3 : 2 Cannibals
-4 : 1 Monk und 1 Cannibal
+4 : 1 Monk and 1 Cannibal
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 An encoded (solution) chromosome of this kind, supplies the alternating
@@ -236,15 +235,15 @@ The implementations of the game itself is contained within the files
 
 The chromosomes encoding of this game is contained within the files
 `src/gen-river/river_gen.(h|cpp)`.
-Here you find the class 'RiverProblem' as an derivation of
-the class 'Chromosomen'.
+Here you find the class 'RiverProblem' as a derivation of
+the class 'Chromosomes'.
 
 ### Example Applications
 
-#### The Riverproblem
-The riverproblem is that monks and canibals must cross the river in
-an way, so that the canibal number is never greater as the monk number
-on both riversides - except only canibals exist on one riverside.
+#### The River Problem
+The river problem is that monks and cannibals must cross the river in
+an way, so that the cannibal number is never greater as the monk number
+on both riversides - except only cannibals exist on one riverside.
 The boat is able to transport up to two persons, but one person as the minimum.
 
 #### The Traveler-Salesman problem
@@ -255,6 +254,14 @@ solution is not clear ... meaning that the shortest way is unknown.
 
 ## Conclusion
 We wish you fun in solving problems following the methods of natural reproduction ;-)
+
+## Historical Notes
+
+This work was initially created 
+by Sven Gothel and Christian Mueller in February 1994 
+for a home assignment in `Object-Oriented Programming (OOP)` 
+at the FH Bielefeld (University for Applied Science) 
+under the supervision of Prof. Dr. Bunse.
 
 ## Changes
 

@@ -1,18 +1,36 @@
-// sales.cpp                                                     6.3.1994
-//
-// Diese Modul wurde fuer eine Hausarbeit im Fach
-// Objektorietierter Programierung (OOP) an der FH Bielefeld
-// unter der Betreuung von Prof. Dr. Bunse erstellt.
-//
-// Autoren der Hausarbeit : Sven Goethel und Christian Mueller
-//
-//
-// Jegliches Copyright aller Dateien ist im Besitz der Autoren.
-// Sven Goethel * Stapenhorststr.35a * 33615 Bielefeld * 0521/139228
-// Bielefeld, den 11.3.1994.
+/*
+ * Author: Sven Gothel <sgothel@jausoft.com>
+ * Copyright (c) 1994-2022 Gothel Software e.K.
+ * Copyright (c) 1994 Christian Mueller
+ *
+ * Proprietary licenses are available
+ * via Gothel Software e.K. <sgothel@jausoft.com>.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA  02111-1307, USA.
+ *
+ * You can also check the GNU General Public License
+ * in the internet at http://www.gnu.org/copyleft/gpl.html !
+ */
 
-# include <math.h>
-# include "sales.hpp"
+#include <math.h>
+#include <iostream>
+
+#include "sales.hpp"
+
+using namespace jau::gentech;
 
 /* Es folgen die Zeilen der Abstandstabelle.             */
 /* Wegen der Symmetrie genuegt die obere Dreiecksmatrix. */

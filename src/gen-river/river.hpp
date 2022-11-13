@@ -1,51 +1,69 @@
-// river.h							 6.3.1994
-//
-//
-// Diese Modul wurde fuer eine Hausarbeit im Fach
-// Objektorietierter Programierung (OOP) an der FH Bielefeld
-// unter der Betreuung von Prof. Dr. Bunse erstellt.
-//
-// Autoren der Hausarbeit : Sven Goethel und Christian Mueller
-//
-//
-// Jegliches Copyright aller Dateien ist im Besitz der Autoren.
-// Sven Goethel * http://www.jausoft.com - mailto:info@jausoft.com
-// Bielefeld, den 11.3.1994.
+/*
+ * Author: Sven Gothel <sgothel@jausoft.com>
+ * Copyright (c) 1994-2022 Gothel Software e.K.
+ * Copyright (c) 1994 Christian Mueller
+ *
+ * Proprietary licenses are available
+ * via Gothel Software e.K. <sgothel@jausoft.com>.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA  02111-1307, USA.
+ *
+ * You can also check the GNU General Public License
+ * in the internet at http://www.gnu.org/copyleft/gpl.html !
+ */
 
 #ifndef _RIVER_H
-  #define _RIVER_H
+#define _RIVER_H
 
-  #include <stdio.h>
-  #include <gentech/gentech.hpp>
+#include <stdio.h>
+#include <gentech/gentech.hpp>
 
-  class RiverGame {
-  public:
-    // Wertebereich des Nukleotids auf dem Chromosom,
-    // welcher fuer dieses Spiel relevant ist.
-    enum { CODE_MIN_VAL=0, CODE_MAX_VAL=4 };
-    RiverGame (int Monk, int Cannibal, double Frontier )
-    : Frontier((int)Frontier), Cannibal(Cannibal), Monk(Monk),
-      RiversideAMonk(0), RiversideBMonk(0),
-      RiversideACannibal(0), RiversideBCannibal(0) {}
+class RiverGame {
+    public:
+        // Wertebereich des Nukleotids auf dem Chromosom,
+        // welcher fuer dieses Spiel relevant ist.
+        enum { CODE_MIN_VAL=0, CODE_MAX_VAL=4 };
 
-    // Spielen...
-    enum { TO_RIVERSIDE_A = 1, TO_RIVERSIDE_B = 2 };
-    double Play(const Chromosom& Lsg, bool Gfx) ;
-    // Der Schiedsrichter ...
-    bool Referee (void) const;
-  protected:
-    int Frontier;
-    int Cannibal;
-    int Monk;
-    int RiversideAMonk;
-    int RiversideBMonk;
-    int RiversideACannibal;
-    int RiversideBCannibal;
-  private:
-    void Move( int );
-    void MoveBack( int );
-    int GetMonkNumber( int );
-    int GetCannibalNumber( int );
-  };
+        RiverGame (int monks, int cannibals, double Frontier )
+        : m_frontier((int)Frontier), m_cannibals(cannibals), m_monks(monks),
+          m_riversideA_monks(0), m_riversideB_monks(0),
+          m_riversideA_cannibals(0), m_riversideB_cannibals(0) {}
 
-# endif
+        // Spielen...
+        enum { TO_RIVERSIDE_A = 1, TO_RIVERSIDE_B = 2 };
+
+        double Play(const jau::gentech::Chromosom& Lsg, bool Gfx) ;
+
+        // Der Schiedsrichter ...
+        bool Referee (void) const;
+
+    protected:
+        int m_frontier;
+        int m_cannibals;
+        int m_monks;
+        int m_riversideA_monks;
+        int m_riversideB_monks;
+        int m_riversideA_cannibals;
+        int m_riversideB_cannibals;
+
+    private:
+        void Move( int );
+        void MoveBack( int );
+        int GetMonkNumber( int );
+        int GetCannibalNumber( int );
+};
+
+#endif

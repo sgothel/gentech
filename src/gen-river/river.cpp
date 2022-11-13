@@ -1,39 +1,55 @@
-// river.cpp                                                     6.3.1994
-//
-// Diese Modul wurde fuer eine Hausarbeit im Fach
-// Objektorietierter Programierung (OOP) an der FH Bielefeld
-// unter der Betreuung von Prof. Dr. Bunse erstellt.
-//
-// Autoren der Hausarbeit : Sven Goethel und Christian Mueller
-//
-//
-// Jegliches Copyright aller Dateien ist im Besitz der Autoren.
-// Sven Goethel * http://www.jausoft.com - mailto:info@jausoft.com
-// Bielefeld, den 11.3.1994.
+/*
+ * Author: Sven Gothel <sgothel@jausoft.com>
+ * Copyright (c) 1994-2022 Gothel Software e.K.
+ * Copyright (c) 1994 Christian Mueller
+ *
+ * Proprietary licenses are available
+ * via Gothel Software e.K. <sgothel@jausoft.com>.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA  02111-1307, USA.
+ *
+ * You can also check the GNU General Public License
+ * in the internet at http://www.gnu.org/copyleft/gpl.html !
+ */
 
-# include "river.hpp"
+#include "river.hpp"
+
+using namespace jau::gentech;
 
 double RiverGame::Play(const Chromosom& Lsg, bool Gfx)
 {
   bool Regeln = true;
   int BoatDir=TO_RIVERSIDE_B;
-  RiversideAMonk=Monk;          RiversideBMonk=0;
-  RiversideACannibal=Cannibal;  RiversideBCannibal=0;
+  m_riversideA_monks=m_monks;          m_riversideB_monks=0;
+  m_riversideA_cannibals=m_cannibals;  m_riversideB_cannibals=0;
 
   if(Gfx==true) {
     printf("\n\n\nFlussproblem mit %d Moenche und %d Kannibalen.",
-     Monk, Cannibal );
+     m_monks, m_cannibals );
     printf("\nLoesungschromosom hat %zu Zuege.", (size_t)Lsg.size());
     printf("\nFuer den naechsten Zug bitte Taste druecken !!!\n\n");
     printf("\n %5d M, %5d K  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
-      RiversideAMonk, RiversideACannibal );
-    printf(" %5d M, %5d K\n", RiversideBMonk, RiversideBCannibal );
+      m_riversideA_monks, m_riversideA_cannibals );
+    printf(" %5d M, %5d K\n", m_riversideB_monks, m_riversideB_cannibals );
   }
   Chromosom::size_type ChromPos=0;
   while( ChromPos<Lsg.size()
 	  && Regeln == true
-	  && (RiversideBMonk+RiversideBCannibal) /
-	     (double)( Monk+Cannibal) < Frontier
+	  && (m_riversideB_monks+m_riversideB_cannibals) /
+	     (double)( m_monks+m_cannibals) < m_frontier
 	)
   {
     if( BoatDir == TO_RIVERSIDE_B ) {
@@ -44,8 +60,8 @@ double RiverGame::Play(const Chromosom& Lsg, bool Gfx)
 	  GetMonkNumber( Lsg[ChromPos] ),
 	  GetCannibalNumber( Lsg[ChromPos] ) );
 	printf("\n\n %5d M, %5d K  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
-	  RiversideAMonk, RiversideACannibal );
-	printf(" %5d M, %5d K\n", RiversideBMonk, RiversideBCannibal );
+	  m_riversideA_monks, m_riversideA_cannibals );
+	printf(" %5d M, %5d K\n", m_riversideB_monks, m_riversideB_cannibals );
       }
       if( ( Regeln = Referee() ) == false ) {
 	// Die nicht regelgerechte Transportation Rueckgaengig machen.
@@ -63,8 +79,8 @@ double RiverGame::Play(const Chromosom& Lsg, bool Gfx)
 	  GetMonkNumber( Lsg[ChromPos] ),
 	  GetCannibalNumber( Lsg[ChromPos] ) );
 	printf("\n %5d M, %5d K  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
-	  RiversideAMonk, RiversideACannibal );
-	printf(" %5d M, %5d K\n", RiversideBMonk, RiversideBCannibal );
+	  m_riversideA_monks, m_riversideA_cannibals );
+	printf(" %5d M, %5d K\n", m_riversideB_monks, m_riversideB_cannibals );
 	getchar();
       }
       if( ( Regeln = Referee() ) == false ) {
@@ -79,8 +95,8 @@ double RiverGame::Play(const Chromosom& Lsg, bool Gfx)
 
   if(Gfx==true) {
     printf("\n\nFitness : %lf",
-      ( (double)RiversideBCannibal+(double)RiversideBMonk ) /
-      ( (double)Cannibal+(double)Monk )
+      ( (double)m_riversideB_cannibals+(double)m_riversideB_monks ) /
+      ( (double)m_cannibals+(double)m_monks )
     );
 
     if(Regeln==true && ChromPos<Lsg.size() ) {
@@ -93,22 +109,22 @@ double RiverGame::Play(const Chromosom& Lsg, bool Gfx)
     getchar();
   }
 
-  return ( ( (double)RiversideBCannibal+(double)RiversideBMonk ) /
-	   ( (double)Cannibal+(double)Monk )
+  return ( ( (double)m_riversideB_cannibals+(double)m_riversideB_monks ) /
+	   ( (double)m_cannibals+(double)m_monks )
 	 );
 }
 
 bool RiverGame::Referee (void) const
 {
-  if ( RiversideAMonk    <0               ||
-       RiversideACannibal<0               ||
-       RiversideBMonk    <0               ||
-       RiversideBCannibal<0               ||
-       ( RiversideACannibal>RiversideAMonk && RiversideAMonk>0 ) ||
-       ( RiversideBCannibal>RiversideBMonk && RiversideBMonk>0 )
+  if ( m_riversideA_monks    <0               ||
+       m_riversideA_cannibals<0               ||
+       m_riversideB_monks    <0               ||
+       m_riversideB_cannibals<0               ||
+       ( m_riversideA_cannibals>m_riversideA_monks && m_riversideA_monks>0 ) ||
+       ( m_riversideB_cannibals>m_riversideB_monks && m_riversideB_monks>0 )
      ) return false;
 
-  if ( RiversideBCannibal-RiversideBMonk > 4 ) {
+  if ( m_riversideB_cannibals-m_riversideB_monks > 4 ) {
     // Wenn mehr als 4 Kannibalen mehr am Zielufer sind,
     // so gibt es keine Moeglichkeit mehr Moenche nachzuholen !!!
     return false;
@@ -122,10 +138,10 @@ void RiverGame::Move( int move )
   int Monks = GetMonkNumber( move ),
       Cannibals = GetCannibalNumber( move );
 
-  RiversideAMonk -= Monks;
-  RiversideBMonk += Monks;
-  RiversideACannibal -= Cannibals;
-  RiversideBCannibal += Cannibals;
+  m_riversideA_monks -= Monks;
+  m_riversideB_monks += Monks;
+  m_riversideA_cannibals -= Cannibals;
+  m_riversideB_cannibals += Cannibals;
 }
 
  void RiverGame::MoveBack( int move )
@@ -133,10 +149,10 @@ void RiverGame::Move( int move )
   int Monks = GetMonkNumber( move ),
       Cannibals = GetCannibalNumber( move );
 
-  RiversideAMonk += Monks;
-  RiversideBMonk -= Monks;
-  RiversideACannibal += Cannibals;
-  RiversideBCannibal -= Cannibals;
+  m_riversideA_monks += Monks;
+  m_riversideB_monks -= Monks;
+  m_riversideA_cannibals += Cannibals;
+  m_riversideB_cannibals -= Cannibals;
  }
 
 int RiverGame::GetMonkNumber( int move )

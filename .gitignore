@@ -6,6 +6,8 @@
 /salesman-data/
 /data/
 /scripts/
+build*/
+dist*/
 
 # Object files
 *.o
