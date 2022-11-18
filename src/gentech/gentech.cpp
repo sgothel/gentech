@@ -1255,7 +1255,7 @@ void Chromosomen::Ausgabe (std::ostream& OS) const noexcept
         if (i % Zeilenlaenge == 0 &&  i) {
             OS << "\n\t";
         }
-        OS << ( THIS[i].GetFitness() < std::numeric_limits<double>::epsilon() ) ? (double)(0) : THIS[i].GetFitness();
+        OS << ( ( THIS[i].GetFitness() < std::numeric_limits<double>::epsilon() ) ? (double)(0) : THIS[i].GetFitness() );
         if (i % Zeilenlaenge != Zeilenlaenge-1 && i != size()-1) {
             OS << ", ";
         }
