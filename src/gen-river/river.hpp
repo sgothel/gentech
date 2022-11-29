@@ -28,7 +28,7 @@
 #ifndef _RIVER_H
 #define _RIVER_H
 
-#include <stdio.h>
+#include <cstdio>
 #include <gentech/gentech.hpp>
 
 class RiverGame {
@@ -38,9 +38,8 @@ class RiverGame {
         enum { CODE_MIN_VAL=0, CODE_MAX_VAL=4 };
 
         RiverGame (int monks, int cannibals, double Frontier )
-        : m_frontier((int)Frontier), m_cannibals(cannibals), m_monks(monks),
-          m_riversideA_monks(0), m_riversideB_monks(0),
-          m_riversideA_cannibals(0), m_riversideB_cannibals(0) {}
+        : m_frontier((int)Frontier), m_cannibals(cannibals), m_monks(monks)
+        {}
 
         // Spielen...
         enum { TO_RIVERSIDE_A = 1, TO_RIVERSIDE_B = 2 };
@@ -48,16 +47,16 @@ class RiverGame {
         double Play(const jau::gentech::Chromosom& Lsg, bool Gfx) ;
 
         // Der Schiedsrichter ...
-        bool Referee (void) const;
+        bool Referee () const;
 
     protected:
         int m_frontier;
         int m_cannibals;
         int m_monks;
-        int m_riversideA_monks;
-        int m_riversideB_monks;
-        int m_riversideA_cannibals;
-        int m_riversideB_cannibals;
+        int m_riversideA_monks = 0;
+        int m_riversideB_monks = 0;
+        int m_riversideA_cannibals = 0;
+        int m_riversideB_cannibals = 0;
 
     private:
         void Move( int );

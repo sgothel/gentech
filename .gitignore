@@ -2,12 +2,14 @@
 /obj/
 /Debug/
 /build/
+/.cache/
 /river-data/
 /salesman-data/
 /data/
 /scripts/
 build*/
 dist*/
+/compile_commands.json
 
 # Object files
 *.o

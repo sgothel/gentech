@@ -34,18 +34,6 @@
      return l + (T)  ( ( h-l+1 ) * (double)rand()/(double)RAND_MAX ) ;
   }
 
-  // Spezielle Instanz von template<class T> Random
-
-  inline double Random (const double l, const double h)
-  {
-     return l + ( ( h-l+1 ) * (double)rand()/(double)RAND_MAX ) ;
-  }
-
-  inline int 	Random (const int    l, const int    h)
-  {
-     return l + (int)  ( ( h-l+1 ) * (double)rand()/(double)RAND_MAX ) ;
-  }
-
   #else
 
   // Die Inline-Funktionen

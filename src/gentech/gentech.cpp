@@ -70,7 +70,7 @@ Chromosom::Chromosom ( Chromosomen & env, size_type initial_length )
 // Zufaellig erzeugte Chromosomen
 {
     for ( Chromosom::size_type i=initial_length; i > 0; --i) {
-        push_back( Random(env.m_min_nucleotide_value,env.m_max_nucleotide_value) );
+        push_back( Random<size_type>(env.m_min_nucleotide_value,env.m_max_nucleotide_value) );
     }
     assert (size() == initial_length);
 }
@@ -176,7 +176,7 @@ void Chromosom::Load(const std::string& FileName) {
     fclose(file);
 }
 
-int Chromosom::GetNukleotidNumber(size_type nuckleotide_idx) const noexcept
+Chromosom::size_type Chromosom::GetNukleotidNumber(size_type nuckleotide_idx) const noexcept
 {
     nucleotide_t nuckleotide_value=THIS[nuckleotide_idx];
 
@@ -301,10 +301,10 @@ void Chromosom::InsertIntrons (size_type von, size_type length)
 
 void Chromosom::Inversion()
 {
-    const size_type start = Random(0, size()-2);
+    const size_type start = Random<size_type>(0, size()-2);
     assert (start < size()-1);
 
-    const size_type end = Random (start+1, size()-1) ;
+    const size_type end = Random(start+1, size()-1) ;
     assert (end < size());
     assert (end > start);
 
@@ -332,7 +332,7 @@ void Chromosom::Inversion()
 
 void Chromosom::Translocation()
 {
-    const size_type start = Random (0, size()-2);
+    const size_type start = Random<size_type>(0, size()-2);
     assert (start < size()-1);
     const size_type end = Random (start+1, size()-1) ;
     assert (end < size());
@@ -347,7 +347,7 @@ void Chromosom::Translocation()
     erase(start, end+1);
     assert( save.size() == length );
 
-    const size_type dest = Random( 0, size()-1 );
+    const size_type dest = Random<size_type>( 0, size()-1 );
     for(size_type i=0; i<save.size(); ++i) {
         THIS.insert(dest+i, save[i]);
     }
@@ -392,7 +392,7 @@ Chromosomen::Chromosomen (nucleotide_t UserNukleoMinVal,
   m_intro_code_len_sum(0),
   m_spliced_chromosom_count(0),
 
-  m_file_ptk_ptr(0),
+  m_file_ptk_ptr(nullptr),
 
   m_generation_start(0),
   m_generation_end(0),
@@ -448,7 +448,7 @@ Chromosomen::Chromosomen (nucleotide_t UserNukleoMinVal,
 
     // int ChromLen, ChromQuantity, i, j;
     size_type ChromQuantity;
-    if (fread(&ChromQuantity, sizeof(ChromQuantity), 1, file)==0) { // FIXME: Use fixed width type
+    if (fread(&ChromQuantity, sizeof(ChromQuantity), 1, file)==0) {
         ABORT("can't read file %s\n", StartGenFile.c_str());
     }
 
@@ -504,7 +504,7 @@ Chromosomen::Chromosomen ( nucleotide_t UserNukleoMinVal, nucleotide_t UserNukle
   m_intro_code_len_sum(0),
   m_spliced_chromosom_count(0),
 
-  m_file_ptk_ptr(0),
+  m_file_ptk_ptr(nullptr),
 
   m_generation_start(0),
   m_generation_end(0),
@@ -560,16 +560,16 @@ void Chromosomen::Save (const std::string& FileName) const
         }
         // 4-7-94, 2:51 PM
     }
-    int ChromQuantity=size();
-    if (fwrite (&ChromQuantity, sizeof (ChromQuantity), 1, file) != 1 ) { // FIXME: Use fixed width type
+    size_type ChromQuantity = size();
+    if (fwrite (&ChromQuantity, sizeof (ChromQuantity), 1, file) != 1 ) {
         ABORT("can't write to file %s\n", FileName.c_str());
     }
-    for (int j=0; j<ChromQuantity; j++ ) {
-        const int ChromLen = THIS[j].size();
-        if (fwrite (&ChromLen, sizeof (ChromLen), 1, file) != 1) { // FIXME: Use fixed width type
+    for (size_type j=0; j<ChromQuantity; j++ ) {
+        const size_type ChromLen = THIS[j].size();
+        if (fwrite (&ChromLen, sizeof (ChromLen), 1, file) != 1) {
             ABORT("can't write to file %s\n", FileName.c_str());
         }
-        for(int i=0; i<ChromLen; ++i) {
+        for(size_type i=0; i<ChromLen; ++i) {
             nucleotide_t value = THIS[j][i];
             if (fwrite (&value, sizeof (nucleotide_t), 1, file) != 1) {
                 ABORT("can't write to file %s\n", FileName.c_str());
@@ -579,8 +579,8 @@ void Chromosomen::Save (const std::string& FileName) const
     fclose(file);
 }
 
-int Chromosomen::Evolution (double GoalFitness, const std::string& chrptrPtkFile,
-			                double BirthRate, int Bigamie )
+Chromosomen::size_type Chromosomen::Evolution (double GoalFitness, const std::string& chrptrPtkFile,
+			                                   double BirthRate, int Bigamie )
 {
     double BestEverAverageFitness = -1,
            Cut = 0; // Der Cut beim Sterben
@@ -651,7 +651,7 @@ int Chromosomen::Evolution (double GoalFitness, const std::string& chrptrPtkFile
     return m_generation;
 }
 
-void Chromosomen::InitFitness(void)
+void Chromosomen::InitFitness()
 {
     for (size_type i = 0; i < size(); ++i) {
         Chromosom Neu = THIS[i];
@@ -665,7 +665,7 @@ void Chromosomen::NewGeneration(double BirthRate, bool Bigamie)
 {
     indexlist_t ElternPaare;
 
-    size_type l = (size_type) ( size() * BirthRate );
+    size_type l = (size_type) ( (double)size() * BirthRate );
     size_type i;
 
     m_generation_start=time(nullptr);
@@ -695,15 +695,15 @@ void Chromosomen::NewGeneration(double BirthRate, bool Bigamie)
             if (!Bigamie)   {
                 // the hard way ...
                 do {
-                    i = Random(0, size()-1);
+                    i = Random<size_type>(0, size()-1);
                 } while( jau::contains(ElternPaare, i) ) ;
                 ElternPaare.push_back(i);
                 l--;
             } else {
                 // Bigamistische Beziehung JA, aber sexuell !!!
-                int w, m;
-                ElternPaare.push_back((w = Random (0, size()-1))) ;
-                while (w == (m=Random (0, size()-1))) ;
+                size_type w, m;
+                ElternPaare.push_back((w = Random<size_type>(0, size()-1))) ;
+                while (w == (m=Random<size_type>(0, size()-1))) ;
                 ElternPaare.push_back(m) ;
                 l-=2;
             }
@@ -763,14 +763,14 @@ void Chromosomen::NewGeneration(bool Bigamie)
             if( !Bigamie ) {
                 size_type i;
                 do {
-                    i = Random(0, size()-1);
+                    i = Random<size_type>(0, size()-1);
                 } while( jau::contains(ElternPaare, i) ) ;
                 ElternPaare.push_back(i);
                 l--;
             } else { // Bigamistische Beziehung JA, aber sexuell !!!
                 size_type w, m;
-                ElternPaare.push_back( ( w = Random(0, size()-1) ) );
-                while( w == ( m = Random(0, size()-1) ) ) ;
+                ElternPaare.push_back( ( w = Random<size_type>(0, size()-1) ) );
+                while( w == ( m = Random<size_type>(0, size()-1) ) ) ;
                 ElternPaare.push_back(m);
                 l-=2;
             }
@@ -779,9 +779,9 @@ void Chromosomen::NewGeneration(bool Bigamie)
 
     l=ElternPaare.size();
 
-
     // alles ok ?? GERADE ANZAHL DER ELTERN !!!
     assert (l%2==0);
+    (void)l;
 
     // Neue Population...
     l=ElternPaare.size();
@@ -904,7 +904,7 @@ void Chromosomen::CrossingOver (size_type m, size_type w)
 
         // Kreuzungspunkte sortiert eintragen.
         for ( size_type i = 0; i < m_cross_val; ++i ) {
-            CrossPoints.insert( Random(0 , THIS[shortest].size()) );
+            CrossPoints.insert( Random<size_type>(0 , THIS[shortest].size()) );
         }
 
         Chromosom NeuA (*this, 0);
@@ -954,7 +954,7 @@ void Chromosomen::CrossingOver (size_type m, size_type w)
 
 void Chromosomen::Mutation()
 {
-    static size_type next_nukleotide_idx = m_mutation_freq + Random( 0, (size_type)(m_mutation_freq/m_mutation_freq_variance) ) ;
+    static size_type next_nukleotide_idx = m_mutation_freq + Random<size_type>( 0, (size_type)(m_mutation_freq/m_mutation_freq_variance) ) ;
     m_mutations_this_gen=0;
 
     if ( m_mutation_freq > 0 ) {
@@ -964,10 +964,10 @@ void Chromosomen::Mutation()
             const size_type chromosom_len = THIS[chromosom_idx].size();
             while( nukleotide_idx < chromosom_len ) {
                 // Die Mutation.
-                (THIS[chromosom_idx])[nukleotide_idx] = Random ( m_min_nucleotide_value, m_max_nucleotide_value);
+                (THIS[chromosom_idx])[nukleotide_idx] = Random<size_type>( m_min_nucleotide_value, m_max_nucleotide_value);
                 m_mutations_this_gen++;
                 mutated=true;
-                nukleotide_idx += m_mutation_freq + Random( 0, (size_type)(m_mutation_freq/m_mutation_freq_variance) );
+                nukleotide_idx += m_mutation_freq + Random<size_type>( 0, (size_type)(m_mutation_freq/m_mutation_freq_variance) );
             }
             if( nukleotide_idx >= chromosom_len ) {
                 nukleotide_idx -= chromosom_len;
@@ -1050,7 +1050,7 @@ void Chromosomen::CalcWholeFitness()
             BestChrom = i;
         }
     }
-    m_avrg_fitness = Total / size();
+    m_avrg_fitness = Total / (double)size();
     m_fitness_sum = Total;
     m_avrg_chromosom_len = (double)ChromLenSum/(double)size();
     if( m_all_time_best.GetFitness() < m_best_fitness && npos != BestChrom) {
@@ -1080,13 +1080,13 @@ Chromosomen::size_type Chromosomen::GetWorstChromosom() const
 
 double Chromosomen::GetXWorstFitness(size_type count) const
 {
-    doubles_sorted__t Worst;
+    doubles_sorted_t Worst;
 
     if (count == 0) { return -1; } // Falsche Anzahl uebergeben
     for (size_type i=0; i<size(); ++i) {
-        if( Worst.size() < count ) {
-            Worst.insert(THIS[i].GetFitness());
-        } else if( THIS[i].GetFitness() < Worst[count-1] ) {
+        if( Worst.size() < count ||
+            THIS[i].GetFitness() < Worst[count-1] ) 
+        {
             Worst.insert(THIS[i].GetFitness());
         }
     }
@@ -1120,7 +1120,7 @@ const Chromosom &Chromosomen::GetTheBestEverChromosom()
   return (const Chromosom&) m_all_time_best;
 }
 
-void Chromosomen::CalcParameter(void)
+void Chromosomen::CalcParameter()
 {
     if (m_splice_code_ptr==nullptr ||
         m_splice_code_ptr->SpliceCode==nullptr ||

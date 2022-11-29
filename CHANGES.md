@@ -3,6 +3,11 @@
 [Original document location](https://jausoft.com/cgit/gentech.git/about/).
 
 ## Changes
+**1.1.0**
+* Add .clang-tidy checks
+* Add IDE: vscode (vscodium) w/ clang usage
+* Bump jaulib 1.0.0
+
 **1.0.0**
 * Add submodule jaulib and use its darray
 * Use cmake and strict compile flags

@@ -25,29 +25,30 @@
  * in the internet at http://www.gnu.org/copyleft/gpl.html !
  */
 
-# ifndef _SALES_H
-  # define _SALES_H
+#ifndef _SALES_H
+#define _SALES_H
 
-  # ifdef __BORLANDC__
-      # include <conio.h>
-  # else
-      # include <stdio.h>
-  # endif
+#include <cstdio>
+#include <gentech/gentech.hpp>
 
-  #include <gentech/gentech.hpp>
+class SalesGame {
+    public:
+        // Wertebereich des Nukleotids auf dem Chromosom,
+        // welcher fuer dieses Spiel relevant ist.
+        enum { CODE_MIN_VAL = 0,
+               CODE_MAX_VAL = 24 };
 
-  class SalesGame {
-  public:
-    // Wertebereich des Nukleotids auf dem Chromosom,
-    // welcher fuer dieses Spiel relevant ist.
-    enum { CODE_MIN_VAL = 0, CODE_MAX_VAL = 24 };
-    SalesGame (double frontier)
-    : Frontier((int)frontier) {}
-    // Spielen...
-    enum { TO_RIVERSIDE_A = 1, TO_RIVERSIDE_B = 2 };
-    double Play(const jau::gentech::Chromosom& Lsg, bool Gfx) const ;
-  protected:
-    int Frontier;
-  };
+        SalesGame(double frontier)
+        : Frontier((int)frontier) {}
 
-# endif
+        // Spielen...
+        enum { TO_RIVERSIDE_A = 1,
+               TO_RIVERSIDE_B = 2 };
+
+        double Play(const jau::gentech::Chromosom& Lsg, bool Gfx) const;
+
+    protected:
+        int Frontier;
+};
+
+#endif

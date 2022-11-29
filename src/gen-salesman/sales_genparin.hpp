@@ -61,7 +61,7 @@ class GenParameter {
         long MutationFreq;
         int MaxNoImprove;
     private:
-        jau::gentech::nucleotide_t TheSpliceCode[100];
+        // jau::gentech::nucleotide_t TheSpliceCode[100];
 };
 
 #endif

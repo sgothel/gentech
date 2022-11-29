@@ -177,6 +177,6 @@ void GenParameter::Input( int NukleoMinVal, int NukleoMaxVal,
     sprintf (input," Abbruch nach Anzahl Generationen ohne Verbesserung [%d]:  ", InputMaxNoImprove);
     ::Input (input, MaxNoImprove, InputMaxNoImprove);
     TheSpliceCodeInfo.Length=0;
-    TheSpliceCodeInfo.SpliceCode=0;
+    TheSpliceCodeInfo.SpliceCode=nullptr;
 
 }

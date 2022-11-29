@@ -40,13 +40,13 @@ namespace jau::gentech {
 
     typedef uint_fast32_t gen_size_type;
 
-    typedef jau::darray<nucleotide_t, jau::callocator<nucleotide_t>, gen_size_type /* size_type */> nucleotide_array_t;
+    typedef jau::darray<nucleotide_t, gen_size_type /* size_type */> nucleotide_array_t;
 
-    typedef jau::darray<gen_size_type, jau::callocator<gen_size_type>, gen_size_type /* size_type */> indexlist_t;
+    typedef jau::darray<gen_size_type, gen_size_type /* size_type */> indexlist_t;
 
-    typedef jau::darray_sorted<gen_size_type, jau::callocator<gen_size_type>, gen_size_type /* size_type */> crosspoints_t;
+    typedef jau::darray_sorted<gen_size_type, gen_size_type /* size_type */> crosspoints_t;
 
-    typedef jau::darray_sorted<double> doubles_sorted__t;
+    typedef jau::darray_sorted<double> doubles_sorted_t;
 
     // Ein Nukleotid soll mittels Integer dargestellt werden.
     // Es bleibt dem Benutzer ueberlassen, wie gross der Wertebereich
@@ -159,7 +159,7 @@ namespace jau::gentech {
             Chromosom( Chromosomen & env, const std::string& FileName ) ;
 
             // Der Destruktor ...
-            virtual ~Chromosom() noexcept {}
+            virtual ~Chromosom() noexcept = default;
 
             // Der Zuweisungsoperator
             Chromosom& operator=(const Chromosom& );
@@ -171,7 +171,7 @@ namespace jau::gentech {
             void Save( const std::string& FileName ) const;
 
             // Returns the nucleotide_number from the nuckleotide_value @ nuckleotide_idx.
-            int GetNukleotidNumber(size_type nuckleotide_idx) const noexcept;
+            size_type GetNukleotidNumber(size_type nuckleotide_idx) const noexcept;
 
             // Berechnet aus der Nukleotid-Nummer, 'i' ist hier der Index dafuer,
             // fuer die Chromosomen-Schicht die UserNukleotidValue.
@@ -211,7 +211,7 @@ namespace jau::gentech {
             void Load(const std::string& FileName);
     };
 
-    typedef jau::darray<Chromosom, jau::callocator<Chromosom>, gen_size_type /* size_type */> chromosom_array_t;
+    typedef jau::darray<Chromosom, gen_size_type /* size_type */> chromosom_array_t;
 
     // Waehrend der Reifeteilung, Meiose, geschehen folgende Dinge :
     //    o Evt. Umschichtung(Inversion[2]/Translocation[6]) der Elterngene fuer
@@ -277,7 +277,7 @@ namespace jau::gentech {
                     size_type MaxChromosomen,
                     const std::string& StartGenFile,
                     size_type Nukleotide=4,
-                    SpliceCodeInfo *PtrSpliceCodeInfo=0,
+                    SpliceCodeInfo *PtrSpliceCodeInfo=nullptr,
                     size_type InversionFreq=0,
                     size_type TranslocationFreq=0,
                     size_type AsymXOverFreq=0,
@@ -295,7 +295,7 @@ namespace jau::gentech {
                     size_type init_chromosom_count,
                     size_type init_chromosom_len,
                     size_type Nukleotide=4,
-                    SpliceCodeInfo *PtrSpliceCodeInfo=0,
+                    SpliceCodeInfo *PtrSpliceCodeInfo=nullptr,
                     size_type InversionFreq=0,
                     size_type TranslocationFreq=0,
                     size_type AsymXOverFreq=0,
@@ -305,7 +305,7 @@ namespace jau::gentech {
             );
 
             // Der Destruktor ...
-            virtual ~Chromosomen() {} ;
+            virtual ~Chromosomen() = default ;
 
             // Die Chromosomen abspeichern..
             void Save( const std::string& fname ) const;
@@ -333,8 +333,8 @@ namespace jau::gentech {
             //                            BirthRate ca. 0.6 => 60 % ist ok.
             // chrptrPtkFile            : Das Protokollfile ...
             // return                   : Die Nummer der EndGeneration
-            virtual int Evolution(double GoalFitness, const std::string& chrptrPtkFile,
-                    double BirthRate=0.6, int Bigamie=0);
+            virtual size_type Evolution(double GoalFitness, const std::string& chrptrPtkFile,
+                                        double BirthRate=0.6, int Bigamie=0);
 
             // Die Mittlere-Fitness der Generation einholen ....
             double GetAverageFitness() const { return m_avrg_fitness; }
@@ -420,7 +420,7 @@ namespace jau::gentech {
 
             // Diese Funktion existiert nur zum Ueberladen bei kuenftigen
             // Nachfahren
-            virtual void Kill(const size_type i) noexcept { erase(i); }
+            virtual void Kill(const size_type i) { erase(i); }
 
             // mittels der 'CrossPoints' in 'dest' EINE Kreuzung aus 'm' & 'w'
             // erzeugen

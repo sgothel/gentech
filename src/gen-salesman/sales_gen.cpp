@@ -81,14 +81,14 @@ SalesChromosomen::SalesChromosomen(
   Flag (0),
   WorstDistance (0),
   BestDistance (-1)
-{ 
-  // StartGene zufaellig setzen !
-  for (int i=StartChromosomNumber ; i > 0  ; i--) {
-    SalesChromosom Gamma (*this, StartChromosomLength);
-    assert (Gamma.size() == StartChromosomLength);
-    push_back(Gamma);
-  }
-  assert (size()==StartChromosomNumber);
+{
+    // StartGene zufaellig setzen !
+    for (size_type i = 0; i < StartChromosomNumber; ++i) {
+        SalesChromosom Gamma(*this, StartChromosomLength);
+        assert(Gamma.size() == StartChromosomLength);
+        push_back(Gamma);
+    }
+    assert(size() == StartChromosomNumber);
 }
 
 SalesChromosomen::SalesChromosomen(
@@ -126,8 +126,8 @@ double SalesChromosomen::Fitness (const Chromosom &Lsg)
   return (WorstDistance - Distance) / WorstDistance;
 }
 
-int SalesChromosomen::Evolution(double GoalFitness, const std::string& chrptrPtkFile,
-			                    double BirthRate, int Bigamie)
+SalesChromosomen::size_type SalesChromosomen::Evolution(double GoalFitness, const std::string& chrptrPtkFile,
+			                                            double BirthRate, int Bigamie)
 {
     (void) GoalFitness;
     double CutFitness = 0; 	// Der Cut beim Sterben
@@ -150,7 +150,7 @@ int SalesChromosomen::Evolution(double GoalFitness, const std::string& chrptrPtk
     Protokoll();
     if( !Echo() ) { stop = true; }
 
-    if( BirthRate <= 0.0 || BirthRate > 1.0 ) { stop=1; }
+    if( BirthRate <= 0.0 || BirthRate > 1.0 ) { stop=true; }
 
     while( m_no_improving_gens < m_max_no_improving_gens && !stop )
     {
@@ -194,7 +194,7 @@ int SalesChromosomen::Evolution(double GoalFitness, const std::string& chrptrPtk
             m_no_improving_gens++ ;
         }
         Protokoll();
-        if( !Echo() ) { stop=1; }
+        if( !Echo() ) { stop=true; }
     }
 
     m_evolution_end=time(nullptr);
@@ -311,7 +311,7 @@ void SalesChromosomen::CreateNewSymChromosom (Chromosom &dest, size_type m, size
 }
 
 /* UNIQUE NUKLEOTIDS */
-void SalesChromosomen::CrossingOver (size_type m, size_type w) noexcept
+void SalesChromosomen::CrossingOver (size_type m, size_type w)
 // Order Crossing Over
 //
 {
@@ -323,12 +323,12 @@ void SalesChromosomen::CrossingOver (size_type m, size_type w) noexcept
 
     // Kreuzungspunkte sortiert eintragen.
     for (size_type i = 0; i < m_cross_val; ++i) {
-        CrossPoints.insert( Random (0 , THIS[w].size()));
+        CrossPoints.insert( Random<size_type>(0 , THIS[w].size()) );
     }
 
     SalesChromosom NeuA (*this);
     SalesChromosom NeuB (*this);
-    int SplicedCode;
+    size_type SplicedCode;
 
     CreateNewSymChromosom (NeuA, m, w, CrossPoints);
     push_back( NeuA );
@@ -352,7 +352,7 @@ void SalesChromosomen::CrossingOver (size_type m, size_type w) noexcept
 
 void SalesChromosomen::Mutation()
 {
-    static size_type next_nukleotide_idx = m_mutation_freq + Random( 0, (size_type)(m_mutation_freq/m_mutation_freq_variance) ) ;
+    static size_type next_nukleotide_idx = m_mutation_freq + Random<size_type>( 0, (size_type)(m_mutation_freq/m_mutation_freq_variance) ) ;
     m_mutations_this_gen=0;
 
     if (m_mutation_freq > 0) {
@@ -375,7 +375,7 @@ void SalesChromosomen::Mutation()
                 // Gewichtete Mutation
                 // MutationsStaerke proportional zur Stagnation der Besten Fitness !!!
                 size_type MutationStrength = (size_type) (
-                                    ( (double)m_no_improving_gens * chromosom_len ) /
+                                    ( (double)m_no_improving_gens * (double)chromosom_len ) /
 	                                  (double)(m_max_no_improving_gens << 1) );
                 // mindestens einen...
                 MutationStrength = std::max<size_type>(3, MutationStrength);
@@ -407,7 +407,7 @@ void SalesChromosomen::Mutation()
 
                 m_mutations_this_gen++;
                 mutated = true;
-                nukleotide_idx += m_mutation_freq + Random( 0, (size_type)(m_mutation_freq/m_mutation_freq_variance) );
+                nukleotide_idx += m_mutation_freq + Random<size_type>( 0, (size_type)(m_mutation_freq/m_mutation_freq_variance) );
             }
             if( nukleotide_idx >= chromosom_len-1 ) {
                 nukleotide_idx -= chromosom_len-1;
@@ -483,7 +483,7 @@ void SalesChromosomen::CalcWholeFitness()
             BestDistance = WorstDistance - TempFitness * WorstDistance;
         }
     }
-    m_avrg_fitness = Total / size();
+    m_avrg_fitness = Total / (double)size();
     m_fitness_sum = Total;
     m_avrg_chromosom_len = (double)ChromLenSum/(double)size();
 }

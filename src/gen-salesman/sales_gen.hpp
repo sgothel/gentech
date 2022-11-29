@@ -86,11 +86,11 @@ class SalesChromosomen : public jau::gentech::Chromosomen {
         bool Echo() const override;
 
         // Beschreibung der Parameter s. "gentech.h"
-        int Evolution(double GoalFitness, const std::string& chrptrPtkFile,
-                      double BirthRate=0.6, int Bigamie=0) override;
+        size_type Evolution(double GoalFitness, const std::string& chrptrPtkFile,
+                            double BirthRate=0.6, int Bigamie=0) override;
 
         // Protokolliere
-        void Protokoll( void ) override;
+        void Protokoll() override;
 
         // Fitness fuer das uebergebene Chromosom.
         // Wert [0..1] !
@@ -105,7 +105,7 @@ class SalesChromosomen : public jau::gentech::Chromosomen {
     protected:
         // Erste Fitness-Initialisierung fuer Evolution,
         // da der Konstruktor die virtuale Fitnessfunktion noch nicht kennt !
-        void InitFitness(void)
+        void InitFitness() override
         {
             AssignWorstDistance();
             Chromosomen::InitFitness();
@@ -121,7 +121,7 @@ class SalesChromosomen : public jau::gentech::Chromosomen {
             erase(i);
         }
 
-        void CrossingOver(size_type m, size_type w) noexcept override;
+        void CrossingOver(size_type m, size_type w) override;
 
         void Mutation() override;
 
@@ -147,8 +147,10 @@ class SalesChromosomen : public jau::gentech::Chromosomen {
             WorstDistance = 0;
             // und neu berechnen
             while (i < size())	{
-                if ((Distance = TheGame.Play ((*this)[i], false)) > WorstDistance)
+                Distance = TheGame.Play ((*this)[i], false);
+                if ( Distance > WorstDistance ) {
                     WorstDistance = Distance;
+                }
                 i++;
             }
             Flag &= ~1;	// 0-te Bit wird geloescht

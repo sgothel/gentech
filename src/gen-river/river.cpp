@@ -114,7 +114,7 @@ double RiverGame::Play(const Chromosom& Lsg, bool Gfx)
 	 );
 }
 
-bool RiverGame::Referee (void) const
+bool RiverGame::Referee () const
 {
   if ( m_riversideA_monks    <0               ||
        m_riversideA_cannibals<0               ||
