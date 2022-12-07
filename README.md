@@ -25,21 +25,54 @@ This version is working using C++17 on a GNU/Linux system.
 C++17 and better.
 
 ## Building Gentech
-The project requires make and g++ >= 8.3 for building.
+
+### Build Dependencies
+- CMake 3.13+ but >= 3.18 is recommended
+- gcc >= 8.3.0
+  - or clang >= 10.0
+- Optional
+  - libunwind8 >= 1.2.1
 
 Installing build dependencies on Debian (11 or better):
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.sh}
-apt install git build-essential g++ gcc libc-dev make
+apt install git
+apt install build-essential g++ gcc libc-dev libpthread-stubs0-dev 
+apt install libunwind8 libunwind-dev
+apt install cmake cmake-extras extra-cmake-modules pkg-config
+apt install doxygen graphviz
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+### Build Procedure
+The following is covered with [a convenient build script](https://jausoft.com/cgit/gentech.git/tree/scripts/build.sh).
 
 For a generic build use:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.sh}
+CPU_COUNT=`getconf _NPROCESSORS_ONLN`
 git clone --recurse-submodule git://jausoft.com/srv/scm/gentech.git
 cd gentech
-make
+mkdir build
+cd build
+cmake ..
+make -j $CPU_COUNT install doc
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The binaries shall reside within `bin`.
+Our cmake configure has a number of options, *cmake-gui* or *ccmake* can show
+you all the options. The interesting ones are detailed below:
+
+Changing install path from /usr/local to /usr
+~~~~~~~~~~~~~
+-DCMAKE_INSTALL_PREFIX=/usr
+~~~~~~~~~~~~~
+
+Building debug build:
+~~~~~~~~~~~~~
+-DDEBUG=ON
+~~~~~~~~~~~~~
+
+To build documentation run: 
+~~~~~~~~~~~~~
+make doc
+~~~~~~~~~~~~~
 
 ## The Genetic Algorithm
 This genetic algorithm follows the natural process,
