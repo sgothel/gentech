@@ -54,7 +54,7 @@ apt install doxygen graphviz
 Perhaps change the clang version-suffix of above clang install line to the appropriate version.
 
 After complete clang installation, you might want to setup the latest version as your default.
-For Debian you can use this [clang alternatives setup script](https://jausoft.com/cgit/cs_class/cpp_basics.git/tree/scripts/setup_clang_alternatives.sh).
+For Debian you can use this [clang alternatives setup script](https://jausoft.com/cgit/gentech.git/tree/scripts/setup_clang_alternatives.sh).
 
 ### Build Procedure
 The following is covered with [a convenient build script](https://jausoft.com/cgit/gentech.git/tree/scripts/build.sh).
@@ -128,11 +128,11 @@ IDE integration configuration files are provided for
   - [cschlosser.doxdocgen](https://github.com/cschlosser/doxdocgen)
   - [jerrygoyal.shortcut-menu-bar](https://github.com/GorvGoyl/Shortcut-Menu-Bar-VSCode-Extension)
 
-For VSCodium one might copy the [example root-workspace file](https://jausoft.com/cgit/cs_class/cpp_basics.git/tree/.vscode/cpp_basics.code-workspace_example)
+For VSCodium one might copy the [example root-workspace file](https://jausoft.com/cgit/gentech.git/tree/.vscode/gentech.code-workspace_example)
 to the parent folder of this project (*note the filename change*) and adjust the `path` to your filesystem.
 ~~~~~~~~~~~~~
-cp .vscode/cpp_basics.code-workspace_example ../cpp_basics.code-workspace
-vi ../cpp_basics.code-workspace
+cp .vscode/gentech.code-workspace_example ../gentech.code-workspace
+vi ../gentech.code-workspace
 ~~~~~~~~~~~~~
 Then you can open it via `File . Open Workspace from File...` menu item.
 - All listed extensions are referenced in this workspace file to be installed via the IDE
