@@ -101,7 +101,15 @@ make doc
 IDE integration configuration files are provided for 
 - [Eclipse](https://download.eclipse.org/eclipse/downloads/) with extensions
   - [CDT](https://github.com/eclipse-cdt/) or [CDT @ eclipse.org](https://projects.eclipse.org/projects/tools.cdt)
-  - `CMake Support`, install `C/C++ CMake Build Support` with ID `org.eclipse.cdt.cmake.feature.group`
+  - Not used due to lack of subproject include file and symbol resolution:
+    - `CMake Support`, install `C/C++ CMake Build Support` with ID `org.eclipse.cdt.cmake.feature.group`
+
+From the project root directory, prepare the `Debug` folder using `cmake`
+~~~~~~~~~~~~~
+./scripts/eclipse-cmake-prepare.sh
+~~~~~~~~~~~~~
+
+The existing project setup is just using `external build` via `make`.
 
 You can import the project to your workspace via `File . Import...` and `Existing Projects into Workspace` menu item.
 
