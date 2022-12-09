@@ -1,6 +1,5 @@
-/bin/
-/obj/
-/Debug/
+/Debug*/
+/Release*/
 /.cache/
 /river-data/
 /salesman-data/

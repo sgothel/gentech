@@ -1,6 +1,5 @@
 include_directories(
   ${PROJECT_SOURCE_DIR}/jaulib/include
-  ${PROJECT_SOURCE_DIR}/src/jaulibs
   ${PROJECT_SOURCE_DIR}/include
 )
 
